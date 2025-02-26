@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Print } from "../Api/Common/Common";
+import { Print } from "../Api/AdminApi/AdminApi";
 
 const Login = () => {
   const navigate = useNavigate();

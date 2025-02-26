@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const commonRoutes=require('./Routes/Common/Common')
+const adminRoutes= require('./Admin/Announcement/AnnouncementRoute')
+
 const app = express();
 
 app.use(
@@ -15,8 +16,8 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use('/api/commonapi',commonRoutes);
 
+app.use('/api/admin',adminRoutes)
 
 const PORT = 5000;
 app.listen(PORT, () => {

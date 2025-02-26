@@ -1,5 +1,6 @@
 const express = require('express');
-const { print } = require('../../Controllers/Common/Common');
+const { print } = require('./AnnouncementController');
+
 
 const router = express.Router();
 
