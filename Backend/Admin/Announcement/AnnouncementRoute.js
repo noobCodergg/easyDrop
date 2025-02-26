@@ -1,9 +1,11 @@
-const express = require('express');
-const { print } = require('./AnnouncementController');
+const { print } = require('./AnnouncementController')
 
 
-const router = express.Router();
+const router = require('express').Router()
 
-router.get('/print',print)
+module.exports = (app) => {
+    
+    router.get('/print',print)
 
-module.exports = router;
+	return app.use('/api/admin/announcement', router)
+}

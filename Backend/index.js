@@ -1,13 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const adminRoutes= require('./Admin/Announcement/AnnouncementRoute')
+
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: 'http://127.0.0.1:5173',
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 
-app.use('/api/admin',adminRoutes)
+require('./Admin/Announcement/AnnouncementRoute')(app)
 
 const PORT = 5000;
 app.listen(PORT, () => {
