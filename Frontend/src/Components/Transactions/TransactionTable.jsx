@@ -1,39 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { getTransactions } from "../../Api/TransactionApi/TransactionApi";
-
+import { getTransactions, updateTransaction } from "../../Api/TransactionApi/TransactionApi";
 
 const TransactionTable = () => {
   const [transactions, setTransactions] = useState([]);
   const [activeTab, setActiveTab] = useState("credit");
-  const [editing, setEditing] = useState({ id: null, field: null }); // Track which cell is being edited
-  const [editedValues, setEditedValues] = useState({}); // Store temporary edits
+  const [editing, setEditing] = useState({ id: null, field: null });
+  const [editedValues, setEditedValues] = useState({});
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await getTransactions();
-        console.log("API Response:", response.data);
-
-        if (Array.isArray(response.data)) {
-          setTransactions(response.data);
-        } else {
-          console.error("Expected an array but got:", response);
-          setTransactions([]);
-        }
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
-        setTransactions([]);
-      }
-    };
-
     fetchTransactions();
   }, []);
 
-  const filteredTransactions = Array.isArray(transactions)
-    ? transactions.filter((transaction) =>
-        activeTab === "credit" ? transaction.credit > 0 : transaction.debit > 0
-      )
-    : [];
+  const fetchTransactions = async () => {
+    try {
+      const response = await getTransactions();
+      if (Array.isArray(response.data)) {
+        setTransactions(response.data);
+      } else {
+        console.error("Unexpected response format:", response);
+        setTransactions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
+  };
 
   const handleEditStart = (id, field) => {
     setEditing({ id, field });
@@ -48,9 +38,7 @@ const TransactionTable = () => {
 
   const handleEditChange = (e, id, field) => {
     const value =
-      field === "credit" || field === "debit"
-        ? parseFloat(e.target.value) || 0
-        : e.target.value;
+      field === "credit" || field === "debit" ? parseFloat(e.target.value) || 0 : e.target.value;
     setEditedValues((prev) => ({
       ...prev,
       [id]: { ...prev[id], [field]: value },
@@ -63,18 +51,12 @@ const TransactionTable = () => {
       ...(editedValues[id] || {}),
     };
 
-    setTransactions((prev) =>
-      prev.map((t) => (t.id === id ? updatedTransaction : t))
-    );
-
-    // Placeholder for API call to persist changes
     try {
-      // await updateTransaction(id, updatedTransaction);
-      console.log("Updated Transaction:", updatedTransaction);
+      await updateTransaction(id, updatedTransaction);
+      setTransactions((prev) => prev.map((t) => (t.id === id ? updatedTransaction : t)));
     } catch (error) {
       console.error("Error updating transaction:", error);
     }
-
     setEditing({ id: null, field: null });
   };
 
@@ -84,27 +66,31 @@ const TransactionTable = () => {
     }
   };
 
+  const filteredTransactions = transactions.filter((t) =>
+    activeTab === "credit" ? t.credit > 0 : t.debit > 0
+  );
+
   return (
     <div className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-md shadow-md border border-gray-200">
       {/* Tabs */}
       <div className="flex justify-center mb-6">
         <button
+          onClick={() => setActiveTab("credit")}
           className={`flex-1 py-3 px-4 text-sm font-semibold rounded-l-md transition-colors duration-200 ${
             activeTab === "credit"
               ? "bg-blue-600 text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
-          onClick={() => setActiveTab("credit")}
         >
           Credit
         </button>
         <button
+          onClick={() => setActiveTab("debit")}
           className={`flex-1 py-3 px-4 text-sm font-semibold rounded-r-md transition-colors duration-200 ${
             activeTab === "debit"
               ? "bg-blue-600 text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
-          onClick={() => setActiveTab("debit")}
         >
           Debit
         </button>
@@ -115,10 +101,10 @@ const TransactionTable = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-50 text-gray-800">
-              <th className="py-3 px-4 text-left font-semibold">Date</th>
-              <th className="py-3 px-4 text-left font-semibold">Category</th>
-              <th className="py-3 px-4 text-left font-semibold">Amount</th>
-              <th className="py-3 px-4 text-left font-semibold">Remarks</th>
+              <th className="py-3 px-4 text-left font-semibold text-sm">Date</th>
+              <th className="py-3 px-4 text-left font-semibold text-sm">Category</th>
+              <th className="py-3 px-4 text-left font-semibold text-sm">Amount</th>
+              <th className="py-3 px-4 text-left font-semibold text-sm">Remarks</th>
             </tr>
           </thead>
           <tbody>
@@ -128,13 +114,13 @@ const TransactionTable = () => {
                   key={transaction.id}
                   className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-100"
                 >
-                  <td className="py-3 px-4 text-gray-600">
+                  <td className="py-3 px-4 text-gray-600 text-sm">
                     {transaction.created_at}
                   </td>
-                  <td className="py-3 px-4 text-gray-600">
+                  <td className="py-3 px-4 text-gray-600 text-sm">
                     {transaction.category_id}
                   </td>
-                  <td className="py-3 px-4 text-gray-600">
+                  <td className="py-3 px-4 text-gray-600 text-sm">
                     {editing.id === transaction.id &&
                     editing.field === (activeTab === "credit" ? "credit" : "debit") ? (
                       <input
@@ -146,11 +132,15 @@ const TransactionTable = () => {
                           ] ?? (activeTab === "credit" ? transaction.credit : transaction.debit)
                         }
                         onChange={(e) =>
-                          handleEditChange(e, transaction.id, activeTab === "credit" ? "credit" : "debit")
+                          handleEditChange(
+                            e,
+                            transaction.id,
+                            activeTab === "credit" ? "credit" : "debit"
+                          )
                         }
                         onBlur={() => handleEditSave(transaction.id)}
                         onKeyPress={(e) => handleKeyPress(e, transaction.id)}
-                        className="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm bg-gray-50"
+                        className="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 text-sm"
                         autoFocus
                       />
                     ) : (
@@ -167,19 +157,20 @@ const TransactionTable = () => {
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-4 text-gray-600">
+                  <td className="py-3 px-4 text-gray-600 text-sm">
                     {editing.id === transaction.id && editing.field === "remarks" ? (
                       <input
                         type="text"
                         value={
-                          editedValues[transaction.id]?.remarks ?? (transaction.remarks || "")
+                          editedValues[transaction.id]?.remarks ??
+                          (transaction.remarks || "")
                         }
                         onChange={(e) =>
                           handleEditChange(e, transaction.id, "remarks")
                         }
                         onBlur={() => handleEditSave(transaction.id)}
                         onKeyPress={(e) => handleKeyPress(e, transaction.id)}
-                        className="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm bg-gray-50"
+                        className="w-full p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent bg-gray-50 text-sm"
                         autoFocus
                       />
                     ) : (
@@ -195,7 +186,10 @@ const TransactionTable = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="py-6 text-center text-gray-500 italic">
+                <td
+                  colSpan="4"
+                  className="py-6 text-center text-gray-500 italic text-sm"
+                >
                   No {activeTab} transactions found.
                 </td>
               </tr>

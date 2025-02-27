@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import TransactionForm from "../Components/Transactions/TransactionForm";
 import TransactionTable from "../Components/Transactions/TransactionTable";
+import Summary from "../Components/Transactions/Summary";
 
 const Transaction = () => {
   const [open, setOpen] = useState(false);
@@ -62,6 +63,7 @@ const Transaction = () => {
           </button>
         </div>
         <TransactionTable />
+        <Summary/>
       </div>
     </div>
   );

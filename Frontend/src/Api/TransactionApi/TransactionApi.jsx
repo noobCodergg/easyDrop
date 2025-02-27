@@ -7,3 +7,5 @@ const API = axios.create({
 
  export const createTransaction=(formData)=>API.post('/createtransaction',formData)
  export const getTransactions=()=>API.get('/gettransactions')
+ export const updateTransaction=(id,updatedFileds)=>API.put(`/updatetransaction/${id}`,updatedFileds)
+ export const getSummary=()=>API.get('/getsummary')
