@@ -43,11 +43,13 @@ const Sidenav = () => {
             active={location.pathname === "/dashboard"}
             isExpanded={isExpanded}
           />
+
+          
           <NavItem
-            to="/profile"
+            to="/transaction"
             icon={<User size={20} />}
             label="Profile"
-            active={location.pathname === "/profile"}
+            active={location.pathname === "/transaction"}
             isExpanded={isExpanded}
           />
           <NavItem
