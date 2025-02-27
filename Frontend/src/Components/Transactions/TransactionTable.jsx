@@ -118,7 +118,7 @@ const TransactionTable = () => {
                     {transaction.created_at}
                   </td>
                   <td className="py-3 px-4 text-gray-600 text-sm">
-                    {transaction.category_id}
+                    {transaction.category_name}
                   </td>
                   <td className="py-3 px-4 text-gray-600 text-sm">
                     {editing.id === transaction.id &&

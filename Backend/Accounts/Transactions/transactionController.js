@@ -6,12 +6,12 @@ const db=require('../../Config/db')
 
 exports.createTransaction = async (req, res) => {
   try {
-    const { date, category_id, credit, debit, remarks, created_by, status, type } = req.body;
+    const { date, category_name, credit, debit, remarks, created_by, status, type } = req.body;
 
     const formattedDate = moment.tz(date, "Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
     const createdAt = moment().tz("Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
 
-    console.log(formattedDate, category_id, credit, debit, remarks, created_by, status, type);
+    console.log(formattedDate, category_name, credit, debit, remarks, created_by, status, type);
 
     // Convert values to numbers
     const creditValue = Number(credit) || 0;
@@ -19,7 +19,7 @@ exports.createTransaction = async (req, res) => {
 
     const newTransaction = {
       date: formattedDate,
-      category_id,
+      category_name,
       credit: creditValue,
       debit: debitValue,
       remarks,
