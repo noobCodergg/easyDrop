@@ -1,14 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Print } from "../Api/AdminApi/AdminApi";
+import {Button} from '../Components/ui/button'
 
 const Login = () => {
   const navigate = useNavigate();
-  const getPrint=async () =>{
+
+  const getPrint = async () => {
     await Print();
-  }
+  };
+
   useEffect(() => {
-    getPrint()
+    getPrint();
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (isLoggedIn) {
       navigate("/dashboard");
@@ -23,14 +26,12 @@ const Login = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen space-y-4">
       <h1 className="text-2xl font-bold">Login Page</h1>
-      <button
-        onClick={handleLogin}
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-      >
+      <Button onClick={handleLogin} variant="default" className="w-40 py-2 text-lg">
         Log In
-      </button>
+      </Button>
     </div>
   );
 };
 
 export default Login;
+

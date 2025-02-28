@@ -42,21 +42,45 @@ exports.createTransaction = async (req, res) => {
 
 
 
+
 exports.getTransaction = async (req, res) => {
   try {
-    const transactions = await transactionModel.getTransactions();
+    // Extract parameters from request
+    let { fromDate, toDate, category, remarks } = req.params;
 
+    console.log("Received Params:", { fromDate, toDate, category_name: category, remarks });
+
+    // Default date range: First day of the current month → Today
+    const defaultFromDate = moment().startOf("month").tz("Asia/Dhaka").format("YYYY-MM-DD 00:00:00");
+    const defaultToDate = moment().tz("Asia/Dhaka").format("YYYY-MM-DD 23:59:59");
+
+    // If `fromDate` and `toDate` are missing or "null", use defaults
+    fromDate = fromDate && fromDate !== "null" ? `${fromDate} 00:00:00` : defaultFromDate;
+    toDate = toDate && toDate !== "null" ? `${toDate} 23:59:59` : defaultToDate;
+
+    // Convert "null" to undefined for optional filters
+    const category_name = category === "null" ? undefined : category; // Rename to match DB
+    remarks = remarks === "null" ? undefined : remarks;
+
+    // Fetch transactions with dynamic filtering
+    const transactions = await transactionModel.getTransactions({ fromDate, toDate, category_name, remarks });
+
+    // Format transaction dates before sending response
     const formattedTransactions = transactions.map((transaction) => ({
       ...transaction,
       date: moment.tz(transaction.date, "Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss"),
       created_at: moment.tz(transaction.created_at, "Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss"),
     }));
-
+    console.log(formattedTransactions)
     res.status(200).json(formattedTransactions);
   } catch (error) {
+    console.error("Error Fetching Transactions:", error);
     res.status(500).json({ error: "Error Occurred" });
   }
 };
+
+
+
 
 exports.updateTransaction = async (req, res) => {
   try {

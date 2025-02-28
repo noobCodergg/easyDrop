@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import TransactionForm from "../Components/Transactions/TransactionForm";
-import TransactionTable from "../Components/Transactions/TransactionTable";
 import Summary from "../Components/Transactions/Summary";
+import Search from "../Components/Transactions/Search";
+import {Button} from '../Components/ui/button'
 
 const Transaction = () => {
   const [open, setOpen] = useState(false);
@@ -24,50 +25,39 @@ const Transaction = () => {
       {/* Transaction Form as Modal */}
       {open && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="relative">
+          <div className="relative bg-white p-6 rounded-lg shadow-lg">
             <TransactionForm />
-            <button
+            <Button
               onClick={handleClose}
               className="absolute top-2 right-2 p-1 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors duration-200"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+              ✕
+            </Button>
           </div>
         </div>
       )}
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        {/* Header with Add Button */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-extrabold text-black tracking-tight">
             Transactions
           </h1>
-          <button
-            onClick={handleOpen}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
-          >
+          <Button onClick={handleOpen} variant="default">
             Add a New Transaction
-          </button>
+          </Button>
         </div>
-        <TransactionTable />
-        <Summary/>
+
+        {/* Search Bar Positioned Below Header */}
+        <div className="p-2 rounded-lg">
+          <Search />
+        </div>
+
+        <Summary />
       </div>
     </div>
   );
 };
 
 export default Transaction;
-

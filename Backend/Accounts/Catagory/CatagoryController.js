@@ -5,7 +5,8 @@ exports.createCatagory=async(req,res)=>{
 
     try{
         await catagoryModel.createCatagory({name})
-        res.status(200).json("Catagory Created")
+        const  catagories=await catagoryModel.getCatagory();
+        res.status(200).json(catagories)
     }catch(error){
         res.status(500).json("Error creating catagory")
     }

@@ -8,7 +8,7 @@ const router = require('express').Router()
 module.exports = (app) => {
     
     router.post('/createtransaction',createTransaction)
-    router.get('/gettransactions',getTransaction)
+    router.get('/gettransactions/:fromDate?/:toDate?/:category?/:remarks?', getTransaction);
     router.put('/updatetransaction/:id',updateTransaction)
     router.get('/getsummary',getSummary)
     return app.use('/api/accounts/transaction', router)

@@ -2,9 +2,16 @@ import { useState, useEffect } from "react";
 import CreatableSelect from "react-select/creatable";
 import { createTransaction } from "../../Api/TransactionApi/TransactionApi";
 import { createCatagory, getCatagory } from "../../Api/CatagoryApi/CatagoryApi";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 
 const TransactionForm = () => {
   const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const [formData, setFormData] = useState({
     category_name: "",
     credit: 0,
@@ -15,47 +22,70 @@ const TransactionForm = () => {
     status: true,
   });
 
-  const fetchCategory = async () => {
-    try {
-      const response = await getCatagory();
-      setCategories(response.data);
-    } catch (error) {
-      console.error("Error fetching categories", error);
-    }
-  };
-
   useEffect(() => {
-    fetchCategory();
+    const fetchCategories = async () => {
+      try {
+        const response = await getCatagory();
+        if (response?.data && Array.isArray(response.data)) {
+          setCategories(response.data);
+        } else {
+          console.error("Invalid category response:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
-  const handleCategoryChange = async (selectedOption) => {
-    if (selectedOption.__isNew__) {
-      try {
-        const addedCategory = await createCatagory({ name: selectedOption.label });
-        setCategories([...categories, addedCategory]);
-        setFormData({ ...formData, category_name: addedCategory.name });
-      } catch (error) {
-        console.error("Error adding category:", error);
-      }
-    } else {
-      setFormData({ ...formData, category_name: selectedOption.label });
-    }
+  const handleCategoryChange = (selectedOption) => {
+    setSelectedCategory(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      category_name: selectedOption ? selectedOption.label : "",
+    }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-      credit: name === "credit" && formData.type === "credit" ? parseFloat(value) || 0 : formData.credit,
-      debit: name === "debit" && formData.type === "debit" ? parseFloat(value) || 0 : formData.debit,
-    });
+      credit: name === "credit" && formData.type === "credit" ? parseFloat(value) || 0 : prev.credit,
+      debit: name === "debit" && formData.type === "debit" ? parseFloat(value) || 0 : prev.debit,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.category_name) {
+      console.error("Category name is required.");
+      return;
+    }
+
     try {
-      await createTransaction(formData);
+      let categoryId = null;
+      let existingCategory = categories.find((cat) => cat.name === formData.category_name);
+
+      if (!existingCategory) {
+        const response = await createCatagory({ name: formData.category_name });
+        if (response.data && response.data.id) {
+          const newCategory = { id: response.data.id, name: formData.category_name };
+          setCategories((prev) => [...prev, newCategory]);
+          existingCategory = newCategory;
+        }
+      }
+
+      if (existingCategory) {
+        categoryId = existingCategory.id;
+      }
+
+      await createTransaction({ ...formData, category_id: categoryId });
+
       setFormData({
         category_name: "",
         credit: 0,
@@ -65,6 +95,8 @@ const TransactionForm = () => {
         created_by: 1,
         status: true,
       });
+
+      setSelectedCategory(null);
     } catch (error) {
       console.error("Error submitting transaction:", error);
     }
@@ -75,7 +107,7 @@ const TransactionForm = () => {
       <form onSubmit={handleSubmit} className="p-4 bg-white rounded-md shadow-md space-y-4 border border-gray-200">
         <h2 className="text-xl font-extrabold text-black text-center">Add Transaction</h2>
 
-        {/* Category Dropdown with Creatable Select */}
+        {/* Category Dropdown */}
         <label className="block">
           <span className="text-gray-800 text-sm font-medium">Select Category</span>
           <CreatableSelect
@@ -83,22 +115,25 @@ const TransactionForm = () => {
             onChange={handleCategoryChange}
             placeholder="Choose or create a category"
             isSearchable
+            isClearable
+            value={selectedCategory}
             className="mt-1"
+            isLoading={loading}
           />
         </label>
 
         {/* Transaction Type */}
         <label className="block">
           <span className="text-gray-800 text-sm font-medium">Type</span>
-          <select
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            className="mt-1 w-full p-2 border border-gray-300 rounded-md text-sm bg-gray-50"
-          >
-            <option value="credit">Credit</option>
-            <option value="debit">Debit</option>
-          </select>
+          <Select value={formData.type} onValueChange={(value) => setFormData((prev) => ({ ...prev, type: value }))}>
+            <SelectTrigger className="w-full border border-gray-300 rounded-md p-2 mt-1">
+              <SelectValue placeholder="Select Type" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-gray-300 rounded-md shadow-md">
+              <SelectItem value="credit">Credit</SelectItem>
+              <SelectItem value="debit">Debit</SelectItem>
+            </SelectContent>
+          </Select>
         </label>
 
         {/* Credit/Debit Amount */}
@@ -106,13 +141,12 @@ const TransactionForm = () => {
           <span className="text-gray-800 text-sm font-medium">
             {formData.type === "credit" ? "Credit Amount" : "Debit Amount"}
           </span>
-          <input
+          <Input
             type="number"
             name={formData.type === "credit" ? "credit" : "debit"}
             step="0.01"
             value={formData.type === "credit" ? formData.credit : formData.debit}
             onChange={handleChange}
-            className="mt-1 w-full p-2 border border-gray-300 rounded-md text-sm bg-gray-50"
             required
           />
         </label>
@@ -120,18 +154,13 @@ const TransactionForm = () => {
         {/* Remarks */}
         <label className="block">
           <span className="text-gray-800 text-sm font-medium">Remarks</span>
-          <textarea
-            name="remarks"
-            value={formData.remarks}
-            onChange={handleChange}
-            className="mt-1 w-full p-2 border border-gray-300 rounded-md text-sm bg-gray-50"
-          />
+          <Textarea name="remarks" value={formData.remarks} onChange={handleChange} />
         </label>
 
         {/* Submit Button */}
-        <button type="submit" className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700">
+        <Button type="submit" className="w-full">
           Submit
-        </button>
+        </Button>
       </form>
     </div>
   );
