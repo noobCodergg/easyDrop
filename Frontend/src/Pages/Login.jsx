@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Print } from "../Api/AdminApi/AdminApi";
+
 import {Button} from '../Components/ui/button'
 
 const Login = () => {
@@ -11,7 +11,6 @@ const Login = () => {
   };
 
   useEffect(() => {
-    getPrint();
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (isLoggedIn) {
       navigate("/dashboard");

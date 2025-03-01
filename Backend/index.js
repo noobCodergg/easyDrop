@@ -17,9 +17,9 @@ app.use(express.json());
 app.use(morgan("dev"));
 moment.tz.setDefault('Asia/Dhaka')
 
-require('./Admin/Announcement/AnnouncementRoute')(app)
-require('./Accounts/Transactions/transactionRoutes')(app)
-require('./Accounts/Catagory/CatagoryRoutes')(app)
+
+require('./App/Catagory/category.routes')(app)
+require('./App/Transactions/transaction.routes')(app)
 
 const PORT = 5000;
 app.listen(PORT, () => {

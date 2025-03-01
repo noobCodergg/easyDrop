@@ -26,8 +26,8 @@ const TransactionForm = () => {
     const fetchCategories = async () => {
       try {
         const response = await getCatagory();
-        if (response?.data && Array.isArray(response.data)) {
-          setCategories(response.data);
+        if (response?.data.data && Array.isArray(response.data.data)) {
+          setCategories(response.data.data);
         } else {
           console.error("Invalid category response:", response);
         }

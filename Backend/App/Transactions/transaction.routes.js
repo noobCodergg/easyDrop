@@ -1,5 +1,5 @@
 
-const { createTransaction, getTransaction, updateTransaction, getSummary } = require('./transactionController')
+const {createTransaction,getTransaction,updateTransaction,getSummary}=require('./transaction.controller')
 
 
 
@@ -11,5 +11,5 @@ module.exports = (app) => {
     router.get('/gettransactions/:fromDate?/:toDate?/:category?/:remarks?', getTransaction);
     router.put('/updatetransaction/:id',updateTransaction)
     router.get('/getsummary',getSummary)
-    return app.use('/api/accounts/transaction', router)
+    return app.use('/api/transaction', router)
 }

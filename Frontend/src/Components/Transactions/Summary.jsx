@@ -15,11 +15,11 @@ const Summary = () => {
       setLoading(true);
       const response = await getSummary();
 
-      const data = response.data;
+      const data = response.data.data;
       setSummary({
-        totalCredits: data[0].total_credit ?? 0,
-        totalDebits: data[0].total_debit ?? 0,
-        netBalance: data[0].total_balane ?? 0, // ✅ Fixed the typo
+        totalCredits: data.total_credit ?? 0,
+        totalDebits: data.total_debit ?? 0,
+        netBalance: data.total_balane ?? 0, // ✅ Fixed the typo
       });
       setError(null);
     } catch (error) {
@@ -50,7 +50,7 @@ const Summary = () => {
           <div className="p-4 bg-gray-50 rounded-md border border-gray-200 text-center">
             <h3 className="text-sm font-semibold text-gray-800">Total Credits</h3>
             <p className="text-lg font-bold text-blue-600 mt-2">
-              ${summary.totalCredits}
+              Tk. {summary.totalCredits}
             </p>
           </div>
 
@@ -58,7 +58,7 @@ const Summary = () => {
           <div className="p-4 bg-gray-50 rounded-md border border-gray-200 text-center">
             <h3 className="text-sm font-semibold text-gray-800">Total Debits</h3>
             <p className="text-lg font-bold text-red-600 mt-2">
-              ${summary.totalDebits}
+              Tk. {summary.totalDebits}
             </p>
           </div>
 
@@ -70,7 +70,7 @@ const Summary = () => {
                 summary.netBalance >= 0 ? "text-green-600" : "text-red-600"
               }`}
             >
-              ${summary.netBalance}
+              Tk. {summary.netBalance}
             </p>
           </div>
         </div>

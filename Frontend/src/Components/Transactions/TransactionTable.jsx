@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { updateTransaction } from "../../Api/TransactionApi/TransactionApi";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import {
   Table,
   TableHeader,
@@ -63,21 +65,51 @@ const TransactionTable = ({ transactions = [] }) => {
 
   const filteredTransactions = transactions.filter((t) => (activeTab === "credit" ? t.credit > 0 : t.debit > 0));
 
+  // Function to export all transactions to Excel
+  const exportToExcel = () => {
+    const formattedData = transactions.map((transaction) => ({
+      Date: transaction.date,
+      Category: transaction.category_name,
+      Credit: transaction.credit || 0,
+      Debit: transaction.debit || 0,
+      Remarks: transaction.remarks || "N/A",
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(formattedData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Transactions");
+
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const dataBlob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(dataBlob, "transactions.xlsx");
+  };
+
   return (
-    <div className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-md shadow-md border border-gray-200">
+    <div className="max-w-4xl mx-auto mt-2 p-6 bg-white rounded-md shadow-md border border-gray-200">
       {/* Tabs */}
-      <div className="flex justify-center mb-6">
-        <Button
-          onClick={() => setActiveTab("credit")}
-          className={`flex-1 py-3 px-4 text-sm font-semibold rounded-l-md ${activeTab === "credit" ? "bg-cyan-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-        >
-          Credit
-        </Button>
-        <Button
-          onClick={() => setActiveTab("debit")}
-          className={`flex-1 py-3 px-4 text-sm font-semibold rounded-r-md ${activeTab === "debit" ? "bg-cyan-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-        >
-          Debit
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex">
+          <Button
+            onClick={() => setActiveTab("credit")}
+            className={`flex-1 py-3 px-4 text-sm font-semibold rounded-l-md ${
+              activeTab === "credit" ? "bg-cyan-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Credit
+          </Button>
+          <Button
+            onClick={() => setActiveTab("debit")}
+            className={`flex-1 py-3 px-4 text-sm font-semibold rounded-r-md ${
+              activeTab === "debit" ? "bg-cyan-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Debit
+          </Button>
+        </div>
+
+        {/* Export Button */}
+        <Button onClick={exportToExcel} className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+          Download Excel
         </Button>
       </div>
 

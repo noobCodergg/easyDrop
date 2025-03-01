@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:5000/api/accounts/transaction", 
+    baseURL: "http://localhost:5000/api/transaction", 
     withCredentials: true,
   });
 

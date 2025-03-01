@@ -1,4 +1,4 @@
-const { print } = require('./AnnouncementController')
+const {print} =require('./AnnouncementController')
 
 
 const router = require('express').Router()
