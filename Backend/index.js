@@ -20,6 +20,7 @@ moment.tz.setDefault('Asia/Dhaka')
 
 require('./App/Catagory/category.routes')(app)
 require('./App/Transactions/transaction.routes')(app)
+require('./App/Finance/finance.routes')(app)
 
 const PORT = 5000;
 app.listen(PORT, () => {

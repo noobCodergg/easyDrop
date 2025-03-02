@@ -1,12 +1,10 @@
-const  {createCategory,getCategory}=require('./category.controller')
+const { createCategory, getCategory } = require("./category.controller");
 
-
-const router = require('express').Router()
+const router = require("express").Router();
 
 module.exports = (app) => {
-    
-    router.post('/createcategory',createCategory)
-    router.get('/getcategory',getCategory)
+  router.post("/createcategory", createCategory);
+  router.get("/getcategory", getCategory);
 
-    return app.use('/api/category', router)
-}
+  return app.use("/api/category", router);
+};
