@@ -1,9 +1,22 @@
-const db = require("../Config/db");
-const { statusCode } = require("../Helpers/httpStatusCode");
+const db = require("../config/db");
+const { statusCode } = require("../helpers/httpStatusCode");
+const {catchBlockCodes}=require("../helpers/catchBlockCodes")
+const validateApiFields=require("../helpers/validateApiKeys")
 
 const createCategory = async (req, res) => {
   const { name } = req.body;
 
+  const isValid=validateApiFields({name});
+
+  if(!isValid){
+		printError('Api Field(s) Errors', __error_function)
+		return res.status(statusCode.BAD_REQUEST)
+		.send({
+			flag: 'FAIL',
+			msg: "Api Field(s) Errors"
+		})
+	}
+  
   try {
     await db("catagory").insert({ name }); 
     const categories = await db("catagory").select("*"); 
@@ -11,11 +24,8 @@ const createCategory = async (req, res) => {
       status: "SUCCESS",
       data: categories,
     });
-  } catch (error) {
-    console.error("Error creating category:", error);
-    res.status(500).json({ 
-      message: "Error creating category" 
-    });
+  } catch (err) {
+    catchBlockCodes(res,err)
   }
 };
 
@@ -26,11 +36,8 @@ const getCategory = async (req, res) => {
       flag: "SUCCESS",
       data: categories,
     });
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    res.status(500).json({ 
-      message: "Error fetching categories" 
-    });
+  } catch (err) {
+    catchBlockCodes(res,err)
   }
 };
 

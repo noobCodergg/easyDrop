@@ -5,4 +5,4 @@ const API = axios.create({
     withCredentials: true,
 });
 
-export const getFinance = (startDate,endDate) => API.get(`/getfinance/${startDate}/${endDate} `);
+export const getFinance = (startDate,endDate) => API.get(`/get-finance/${startDate}/${endDate} `);

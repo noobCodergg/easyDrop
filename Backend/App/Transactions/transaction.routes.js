@@ -8,12 +8,12 @@ const {
 const router = require("express").Router();
 
 module.exports = (app) => {
-  router.post("/createtransaction", createTransaction);
+  router.post("/create-transaction", createTransaction);
   router.get(
-    "/gettransactions/:fromDate?/:toDate?/:category?/:remarks?",
+    "/get-transactions/:fromDate?/:toDate?/:category?/:remarks?",
     getTransaction
   );
-  router.put("/updatetransaction/:id", updateTransaction);
-  router.get("/getsummary", getSummary);
+  router.put("/update-transaction/:id", updateTransaction);
+  router.get("/get-summary", getSummary);
   return app.use("/api/transaction", router);
 };

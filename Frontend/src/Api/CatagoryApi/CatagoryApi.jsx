@@ -5,5 +5,5 @@ const API = axios.create({
     withCredentials: true,
   });
 
- export const createCatagory=(name)=>API.post('/createcategory',name)
- export const getCatagory=()=>API.get('/getcategory')
+ export const createCatagory=(name)=>API.post('/create-category',name)
+ export const getCatagory=()=>API.get('/get-category')

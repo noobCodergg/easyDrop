@@ -1,7 +1,8 @@
 const moment = require("moment-timezone");
-const db = require("../Config/db");
-const { statusCode } = require("../Helpers/httpStatusCode");
-
+const db = require("../config/db");
+const { statusCode } = require("../helpers/httpStatusCode");
+const {catchBlockCodes}=require('../helpers/catchBlockCodes')
+const validateApiFields=require('../helpers/validateApiKeys')
 
 const createTransaction = async (req, res) => {
   try {
@@ -16,6 +17,17 @@ const createTransaction = async (req, res) => {
       type,
     } = req.body;
 
+    const isValid=validateApiFields({date,category_name,credit,debit,remarks,created_by,status,type})
+
+    if(!isValid){
+      printError('Api Field(s) Errors', __error_function)
+      return res.status(statusCode.BAD_REQUEST)
+      .send({
+        flag: 'FAIL',
+        msg: "Api Field(s) Errors"
+      })
+    }
+
     const formattedDate = moment.tz(date, "Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
     const createdAt = moment().tz("Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
 
@@ -24,7 +36,6 @@ const createTransaction = async (req, res) => {
     const debitValue = parseFloat(debit) || 0;
 
     await db.transaction(async (trx) => {
-      // Insert new transaction
       await trx("transactions").insert({
         date: formattedDate,
         category_name,
@@ -60,9 +71,8 @@ const createTransaction = async (req, res) => {
     });
 
     res.status(statusCode.OK).json({ flag: "SUCCESS", msg: "Transaction Created" });
-  } catch (error) {
-    console.error("Error creating transaction:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+  } catch (err) {
+     catchBlockCodes(res,err)
   }
 };
 
@@ -104,9 +114,8 @@ const getTransaction = async (req, res) => {
 
     console.log(formattedTransactions);
     res.status(statusCode.OK).json({ flag: "SUCCESS", data: formattedTransactions });
-  } catch (error) {
-    console.error("Error Fetching Transactions:", error);
-    res.status(500).json({ error: "Error Occurred" });
+  } catch (err) {
+    catchBlockCodes(res,err)
   }
 };
 
@@ -115,6 +124,17 @@ const updateTransaction = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedFields = req.body;
+
+    const isValid=validateApiFields({id,updatedFields})
+
+    if(!isValid){
+      printError('Api Field(s) Errors', __error_function)
+      return res.status(statusCode.BAD_REQUEST)
+      .send({
+        flag: 'FAIL',
+        msg: "Api Field(s) Errors"
+      })
+    }
 
     await db.transaction(async (trx) => {
       const existingTransaction = await trx("transactions").where({ id }).first();
@@ -140,14 +160,13 @@ const updateTransaction = async (req, res) => {
       await trx("summary").update({
         total_credit: updatedTotalCredit,
         total_debit: updatedTotalDebit,
-        total_balane: updatedTotalBalance, // Fixed typo
+        total_balane: updatedTotalBalance, 
       });
 
       res.status(statusCode.OK).json({ flag: "SUCCESS", msg: "Transaction Updated" });
     });
-  } catch (error) {
-    console.error("Error updating transaction:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+  } catch (err) {
+    catchBlockCodes(res,err)
   }
 };
 
@@ -161,9 +180,8 @@ const getSummary = async (req, res) => {
     }
 
     res.status(statusCode.OK).json({ flag: "SUCCESS", data: summary });
-  } catch (error) {
-    console.error("Error fetching summary:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+  } catch (err) {
+    catchBlockCodes(res,err)
   }
 };
 
