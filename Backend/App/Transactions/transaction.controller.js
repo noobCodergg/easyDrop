@@ -1,37 +1,35 @@
 const moment = require("moment-timezone");
 const db = require("../config/db");
 const { statusCode } = require("../helpers/httpStatusCode");
-const {catchBlockCodes}=require('../helpers/catchBlockCodes')
-const validateApiFields=require('../helpers/validateApiKeys')
+const { catchBlockCodes } = require("../helpers/catchBlockCodes");
+const validateApiFields = require("../helpers/validateApiKeys");
+const { printError } = require("../helpers/controllerProfile");
 
 const createTransaction = async (req, res) => {
   try {
     const {
       date,
       category_name,
-      credit,
-      debit,
+      credit = 0,
+      debit = 0,
       remarks,
       created_by,
       status,
       type,
     } = req.body;
 
-    const isValid=validateApiFields({date,category_name,credit,debit,remarks,created_by,status,type})
-
-    if(!isValid){
-      printError('Api Field(s) Errors', __error_function)
-      return res.status(statusCode.BAD_REQUEST)
-      .send({
-        flag: 'FAIL',
-        msg: "Api Field(s) Errors"
-      })
+    // Validate required fields
+    if (!validateApiFields({ category_name, remarks, created_by, status, type })) {
+      printError("Api Field(s) Errors", "createTransaction");
+      return res.status(statusCode.BAD_REQUEST).json({
+        flag: "FAIL",
+        msg: "Api Field(s) Errors",
+      });
     }
 
-    const formattedDate = moment.tz(date, "Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
-    const createdAt = moment().tz("Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
-
-   
+    // Use default timezone (Asia/Dhaka) set in index.js
+    const formattedDate = moment(date).format("YYYY-MM-DD HH:mm:ss");
+    const createdAt = moment().format("YYYY-MM-DD HH:mm:ss");
     const creditValue = parseFloat(credit) || 0;
     const debitValue = parseFloat(debit) || 0;
 
@@ -48,140 +46,147 @@ const createTransaction = async (req, res) => {
         type,
       });
 
-   
-      const existingSummary = await trx("summary").first();
+      const summary = await trx("summary").first();
+      const isCredit = type === "credit";
+      const isDebit = type === "debit";
 
-      if (existingSummary) {
-        const updatedTotalCredit = parseFloat(existingSummary.total_credit) + (type === "credit" ? creditValue : 0);
-        const updatedTotalDebit = parseFloat(existingSummary.total_debit) + (type === "debit" ? debitValue : 0);
-        const updatedTotalBalance = updatedTotalCredit - updatedTotalDebit;
+      if (summary) {
+        const totalCredit = parseFloat(summary.total_credit) + (isCredit ? creditValue : 0);
+        const totalDebit = parseFloat(summary.total_debit) + (isDebit ? debitValue : 0);
+        const totalBalance = totalCredit - totalDebit;
 
         await trx("summary").update({
-          total_credit: updatedTotalCredit,
-          total_debit: updatedTotalDebit,
-          total_balane: updatedTotalBalance, // Fixed typo
+          total_credit: totalCredit,
+          total_debit: totalDebit,
+          total_balance: totalBalance, // Corrected from total_balane
         });
       } else {
         await trx("summary").insert({
-          total_credit: type === "credit" ? creditValue : 0,
-          total_debit: type === "debit" ? debitValue : 0,
-          total_balane: creditValue - debitValue, // Fixed typo
+          total_credit: isCredit ? creditValue : 0,
+          total_debit: isDebit ? debitValue : 0,
+          total_balance: creditValue - debitValue, // Corrected from total_balane
         });
       }
     });
 
-    res.status(statusCode.OK).json({ flag: "SUCCESS", msg: "Transaction Created" });
+    return res.status(statusCode.OK).json({
+      flag: "SUCCESS",
+      msg: "Transaction Created",
+    });
   } catch (err) {
-     catchBlockCodes(res,err)
+    catchBlockCodes(res, err);
   }
 };
-
 
 const getTransaction = async (req, res) => {
   try {
     let { fromDate, toDate, category, remarks } = req.params;
 
-    console.log("Received Params:", { fromDate, toDate, category_name: category, remarks });
+    // Set default date range if not provided
+    const defaultFromDate = moment().startOf("month").format("YYYY-MM-DD 00:00:00");
+    const defaultToDate = moment().format("YYYY-MM-DD 23:59:59");
 
-    
-    const defaultFromDate = moment().startOf("month").tz("Asia/Dhaka").format("YYYY-MM-DD 00:00:00");
-    const defaultToDate = moment().tz("Asia/Dhaka").format("YYYY-MM-DD 23:59:59");
-
-    
     fromDate = fromDate && fromDate !== "null" ? `${fromDate} 00:00:00` : defaultFromDate;
     toDate = toDate && toDate !== "null" ? `${toDate} 23:59:59` : defaultToDate;
-
-    
     const category_name = category === "null" ? undefined : category;
-    remarks = remarks === "null" ? undefined : remarks;
+    const searchRemarks = remarks === "null" ? undefined : remarks;
 
-    
     const transactions = await db("transactions")
       .select("*")
       .whereBetween("date", [fromDate, toDate])
       .modify((query) => {
         if (category_name) query.where("category_name", category_name);
-        if (remarks) query.where("remarks", "like", `%${remarks}%`);
+        if (searchRemarks) query.where("remarks", "like", `%${searchRemarks}%`);
       })
       .orderBy("date", "desc");
 
-   
     const formattedTransactions = transactions.map((transaction) => ({
       ...transaction,
-      date: moment.tz(transaction.date, "Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss"),
-      created_at: moment.tz(transaction.created_at, "Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss"),
+      date: moment(transaction.date).format("YYYY-MM-DD HH:mm:ss"),
+      created_at: moment(transaction.created_at).format("YYYY-MM-DD HH:mm:ss"),
     }));
 
-    console.log(formattedTransactions);
-    res.status(statusCode.OK).json({ flag: "SUCCESS", data: formattedTransactions });
+    return res.status(statusCode.OK).json({
+      flag: "SUCCESS",
+      msg: "Transactions Retrieved",
+      data: formattedTransactions,
+    });
   } catch (err) {
-    catchBlockCodes(res,err)
+    catchBlockCodes(res, err);
   }
 };
-
 
 const updateTransaction = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedFields = req.body;
 
-    const isValid=validateApiFields({id,updatedFields})
-
-    if(!isValid){
-      printError('Api Field(s) Errors', __error_function)
-      return res.status(statusCode.BAD_REQUEST)
-      .send({
-        flag: 'FAIL',
-        msg: "Api Field(s) Errors"
-      })
+    // Validate required fields
+    if (!validateApiFields({ id })) {
+      printError("Invalid Transaction ID", "updateTransaction");
+      return res.status(statusCode.BAD_REQUEST).json({
+        flag: "FAIL",
+        msg: "Invalid Transaction ID",
+      });
     }
 
     await db.transaction(async (trx) => {
       const existingTransaction = await trx("transactions").where({ id }).first();
-
       if (!existingTransaction) {
-        return res.status(statusCode.NOT_FOUND).json({ message: "Transaction not found" });
+        return res.status(statusCode.NOT_FOUND).json({
+          flag: "FAIL",
+          msg: "Transaction not found",
+        });
       }
 
-      const { debit: oldDebit, credit: oldCredit } = existingTransaction;
-      const { debit: newDebit = oldDebit, credit: newCredit = oldCredit } = updatedFields;
+      const { debit: oldDebit = 0, credit: oldCredit = 0 } = existingTransaction;
+      const { debit: newDebit = oldDebit, credit: newCredit = oldCredit, type = existingTransaction.type } = updatedFields;
 
       await trx("transactions").where({ id }).update(updatedFields);
 
-      const existingSummary = await trx("summary").first();
-      if (!existingSummary) {
+      const summary = await trx("summary").first();
+      if (!summary) {
         throw new Error("Summary table is empty");
       }
 
-      const updatedTotalCredit = parseFloat(existingSummary.total_credit) - parseFloat(oldCredit) + parseFloat(newCredit);
-      const updatedTotalDebit = parseFloat(existingSummary.total_debit) - parseFloat(oldDebit) + parseFloat(newDebit);
-      const updatedTotalBalance = updatedTotalCredit - updatedTotalDebit;
+      const totalCredit = parseFloat(summary.total_credit) - parseFloat(oldCredit) + parseFloat(newCredit);
+      const totalDebit = parseFloat(summary.total_debit) - parseFloat(oldDebit) + parseFloat(newDebit);
+      const totalBalance = totalCredit - totalDebit;
 
       await trx("summary").update({
-        total_credit: updatedTotalCredit,
-        total_debit: updatedTotalDebit,
-        total_balane: updatedTotalBalance, 
+        total_credit: totalCredit,
+        total_debit: totalDebit,
+        total_balance: totalBalance, // Corrected from total_balane
       });
+    });
 
-      res.status(statusCode.OK).json({ flag: "SUCCESS", msg: "Transaction Updated" });
+    return res.status(statusCode.OK).json({
+      flag: "SUCCESS",
+      msg: "Transaction Updated",
     });
   } catch (err) {
-    catchBlockCodes(res,err)
+    catchBlockCodes(res, err);
   }
 };
-
 
 const getSummary = async (req, res) => {
   try {
     const summary = await db("summary").select("*").first();
 
     if (!summary) {
-      return res.status(500).json({ message: "No summary data found" });
+      return res.status(statusCode.NOT_FOUND).json({
+        flag: "FAIL",
+        msg: "No summary data found",
+      });
     }
 
-    res.status(statusCode.OK).json({ flag: "SUCCESS", data: summary });
+    return res.status(statusCode.OK).json({
+      flag: "SUCCESS",
+      msg: "Summary Retrieved",
+      data: summary,
+    });
   } catch (err) {
-    catchBlockCodes(res,err)
+    catchBlockCodes(res, err);
   }
 };
 

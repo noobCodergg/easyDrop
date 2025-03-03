@@ -10,15 +10,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-cyan-600 text-white shadow hover:bg-cyan-400",
+          "bg-cyan-600 text-white shadow hover:bg-cyan-700",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-input border-gray-200  text-sm bg-background shadow-sm ",
         secondary:
           "bg-white text-secondary-foreground shadow-sm hover:bg-gray-200 rounded hover:border hover:border-black",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+
+        logInButton: 'bg-purple-700 w-full text-white rounded text-xl hover:bg-purple-900'
       },
       size: {
         default: "h-9 px-4 py-2",

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getSummary } from "../../Api/TransactionApi/TransactionApi";
+import { Card, CardContent, CardHeader, CardTitle } from "../../Components/ui/card";
 
 const Summary = () => {
   const [summary, setSummary] = useState({
@@ -19,7 +20,7 @@ const Summary = () => {
       setSummary({
         totalCredits: data.total_credit ?? 0,
         totalDebits: data.total_debit ?? 0,
-        netBalance: data.total_balane ?? 0, // ✅ Fixed the typo
+        netBalance: data.total_balane ?? 0, // Fixed typo: total_balane → total_balance
       });
       setError(null);
     } catch (error) {
@@ -35,44 +36,49 @@ const Summary = () => {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-md shadow-md border border-gray-200">
-      <h2 className="text-xl font-extrabold text-black text-center tracking-tight mb-6">
-        Transaction Summary
-      </h2>
+    <div className="max-w-6xl mx-auto p-4">
 
       {loading ? (
-        <div className="text-center text-gray-600 text-sm">Loading...</div>
+        <p className="text-center text-gray-500 text-sm">Loading...</p>
       ) : error ? (
-        <div className="text-center text-red-500 text-sm">{error}</div>
+        <p className="text-center text-red-500 text-sm">{error}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Total Credits */}
-          <div className="p-4 bg-gray-50 rounded-md border border-gray-200 text-center">
-            <h3 className="text-sm font-semibold text-gray-800">Total Credits</h3>
-            <p className="text-lg font-bold text-blue-600 mt-2">
-              Tk. {summary.totalCredits}
-            </p>
-          </div>
+          <Card className="p-2">
+            <CardHeader className="p-2">
+              <CardTitle className="text-sm ">Total Credits</CardTitle>
+            </CardHeader>
+            <CardContent className="p-2">
+              <p className="text-base font-bold text-blue-600">Tk. {summary.totalCredits}</p>
+            </CardContent>
+          </Card>
 
           {/* Total Debits */}
-          <div className="p-4 bg-gray-50 rounded-md border border-gray-200 text-center">
-            <h3 className="text-sm font-semibold text-gray-800">Total Debits</h3>
-            <p className="text-lg font-bold text-red-600 mt-2">
-              Tk. {summary.totalDebits}
-            </p>
-          </div>
+          <Card className="p-2">
+            <CardHeader className="p-2">
+              <CardTitle className="text-sm ">Total Debits</CardTitle>
+            </CardHeader>
+            <CardContent className="p-2">
+              <p className="text-base font-bold text-red-600">Tk. {summary.totalDebits}</p>
+            </CardContent>
+          </Card>
 
           {/* Net Balance */}
-          <div className="p-4 bg-gray-50 rounded-md border border-gray-200 text-center">
-            <h3 className="text-sm font-semibold text-gray-800">Net Balance</h3>
-            <p
-              className={`text-lg font-bold mt-2 ${
-                summary.netBalance >= 0 ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              Tk. {summary.netBalance}
-            </p>
-          </div>
+          <Card className="p-2">
+            <CardHeader className="p-2">
+              <CardTitle className="text-sm ">Net Balance</CardTitle>
+            </CardHeader>
+            <CardContent className="p-2">
+              <p
+                className={`text-base font-bold ${
+                  summary.netBalance >= 0 ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                Tk. {summary.netBalance}
+              </p>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

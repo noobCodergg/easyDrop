@@ -16,4 +16,27 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
 })
 Input.displayName = "Input"
 
-export { Input }
+
+const LogInInput = React.forwardRef(({ className, type, label, ...props }, ref) => {
+  return (
+    <div className="space-y-1">
+      {label && (
+        <label className="text-xl font-bold">
+          {label}
+        </label>
+      )}
+      <input
+        type={type}
+        className={cn(
+          "flex h-9 w-full bg-gray-200 border border-gray-600 rounded text-sm p-4",
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    </div>
+  );
+});
+Input.displayName = "LogInInput";
+
+export { Input,LogInInput }

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getTransactions } from "../../Api/TransactionApi/TransactionApi";
 import TransactionTable from "./TransactionTable";
-import { getCatagory } from "../../Api/CatagoryApi/CatagoryApi";
+import { getCatagory } from "../../Api/CatagoryApi/CatagoryApi"; // Note: Should be corrected to getCategory
 import { Button } from "../../Components/ui/button";
 import { Input } from "../../Components/ui/input";
-
+import { cn } from "../../lib/utils";
 import {
   Select,
   SelectContent,
@@ -12,9 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../Components/ui/select";
-import { Calendar } from "../../Components/ui/calendar"; // ShadCN Calendar
+import { Calendar } from "../../Components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../Components/ui/popover";
-import { CalendarIcon } from "lucide-react"; // Calendar icon for the button
+import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import Summary from "./Summary";
 import TransactionForm from "./TransactionForm";
@@ -27,10 +27,7 @@ const Search = () => {
     remarks: "",
   });
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -44,16 +41,20 @@ const Search = () => {
         setTransactions([]);
       }
     } catch (error) {
-      console.log("Error fetching transactions:", error);
+      console.error("Error fetching transactions:", error);
     }
   };
 
   const fetchCategories = async () => {
     try {
       const response = await getCatagory();
-      setCategories(response.data.data);
+      if (response?.data?.data) {
+        setCategories(response.data.data);
+      } else {
+        console.error("Invalid category response:", response);
+      }
     } catch (error) {
-      console.log("Error fetching categories:", error);
+      console.error("Error fetching categories:", error);
     }
   };
 
@@ -63,10 +64,14 @@ const Search = () => {
   }, []);
 
   const handleCategoryChange = (value) => {
-    setFormData({ ...formData, category: value });
+    setFormData((prev) => ({ ...prev, category: value }));
   };
 
-  const handleSearch = async () => {
+  const handleDateChange = (field) => (date) => {
+    setFormData((prev) => ({ ...prev, [field]: date }));
+  };
+
+  const handleSearch = () => {
     const formattedData = {
       ...formData,
       fromDate: formData.fromDate ? format(formData.fromDate, "yyyy-MM-dd") : null,
@@ -75,26 +80,33 @@ const Search = () => {
     fetchTransactions(formattedData);
   };
 
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-6xl mx-auto p-4">
       {/* Search Filters */}
-      <div className="grid grid-cols-5 gap-4 items-end">
+      <div className="flex flex-wrap gap-2 justify-end p-4">
         {/* From Date */}
-        <Popover>
+        <Popover >
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              <span className={formData.fromDate ? "text-gray-900" : "text-gray-500 text-sm"}>
-                {formData.fromDate ? format(formData.fromDate, "yyyy-MM-dd") : "Pick a date"}
-              </span>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[200px] justify-start text-left font-normal",
+                !formData.fromDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4 " />
+              {formData.fromDate ? format(formData.fromDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="bg-white shadow-md rounded-md p-2">
-            <Calendar
+          <PopoverContent className="w-auto p-0">
+            <Calendar className='bg-white'
               mode="single"
               selected={formData.fromDate}
-              onSelect={(date) => setFormData({ ...formData, fromDate: date })}
-              className="bg-white p-2 rounded-md shadow"
+              onSelect={handleDateChange("fromDate")}
+              initialFocus
             />
           </PopoverContent>
         </Popover>
@@ -102,29 +114,33 @@ const Search = () => {
         {/* To Date */}
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal">
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[200px] justify-start text-left font-normal",
+                !formData.toDate && "text-muted-foreground"
+              )}
+            >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              <span className={formData.toDate ? "text-gray-900" : "text-gray-500 text-sm"}>
-                {formData.toDate ? format(formData.toDate, "yyyy-MM-dd") : "Pick a date"}
-              </span>
+              {formData.toDate ? format(formData.toDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="bg-white shadow-md rounded-md p-2">
-            <Calendar
+          <PopoverContent className="w-auto p-0">
+            <Calendar className='bg-white'
               mode="single"
               selected={formData.toDate}
-              onSelect={(date) => setFormData({ ...formData, toDate: date })}
-              className="bg-white p-2 rounded-md shadow"
+              onSelect={handleDateChange("toDate")}
+              initialFocus
             />
           </PopoverContent>
         </Popover>
 
         {/* Category Dropdown */}
-        <Select onValueChange={handleCategoryChange}>
-          <SelectTrigger>
+        <Select onValueChange={handleCategoryChange} >
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select Category" />
           </SelectTrigger>
-          <SelectContent className="bg-white shadow-md rounded-md">
+          <SelectContent className='bg-white'>
             {categories.map((cat) => (
               <SelectItem key={cat.id} value={cat.name}>
                 {cat.name}
@@ -138,8 +154,9 @@ const Search = () => {
           type="text"
           name="remarks"
           value={formData.remarks}
-          onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
+          onChange={(e) => setFormData((prev) => ({ ...prev, remarks: e.target.value }))}
           placeholder="Remarks"
+          className="w-[200px]"
         />
 
         {/* Search Button */}
@@ -147,28 +164,31 @@ const Search = () => {
       </div>
 
       {/* Summary */}
-      <Summary />
+      <div>
+        <Summary />
+      </div>
 
-      {/* Add Transaction Button (Moved Outside Modal) */}
-      <div className="flex justify-end mt-4">
-        <Button onClick={handleOpen} className="px-4 py-2 text-lg">
-          + Add Transaction
-        </Button>
+      {/* Add Transaction Button */}
+      <div className="flex justify-end p-4">
+        <Button onClick={handleOpenModal}>+ Add Transaction</Button>
       </div>
 
       {/* Transaction Form Modal */}
-      {open && (
+      {isModalOpen && (
         <>
           {/* Overlay */}
-          <div className="fixed inset-0 bg-black/50 z-40" onClick={handleClose} />
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={handleCloseModal}
+          />
 
           {/* Modal */}
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 flex items-center justify-center z-50">
             <div className="relative bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
               <TransactionForm />
               <Button
-                onClick={handleClose}
-                className="absolute top-2 right-2 p-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors duration-200"
+                onClick={handleCloseModal}
+                className="absolute top-2 right-2 w-8 h-8 p-0 flex items-center justify-center"
               >
                 ✕
               </Button>
@@ -178,7 +198,9 @@ const Search = () => {
       )}
 
       {/* Transactions Table */}
-      <TransactionTable transactions={transactions} />
+      <div>
+        <TransactionTable transactions={transactions} />
+      </div>
     </div>
   );
 };

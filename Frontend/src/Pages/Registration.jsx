@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Input } from "../Components/ui/input";
+import { cn } from "../lib/utils";
 import { Button } from "../Components/ui/button";
+import { LogInInput } from "../Components/ui/input";
 
 const Registration = () => {
   const [formData, setFormData] = useState({
@@ -21,68 +22,90 @@ const Registration = () => {
   };
 
   return (
-    <div className="max-w-[1100px] mx-auto flex flex-col items-center pt-2 w-full px-4 sm:px-0">
-      <h2 className="text-[17px] max-w-[500px] md:max-w-[800px] font-bold sm:text-xl md:text-3xl text-center text-purple-800 mb-8">
-        Register to Start Your Investment Journey
-      </h2>
-      <div className="w-full max-w-md">
-        <div className="border border-gray-300 rounded-sm shadow-lg bg-white p-6">
-          <h3 className="text-lg font-semibold text-center text-gray-500 mb-6">
-            Registration Form
-          </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              type="text"
-              name="fullName"
-              placeholder="Full Name"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              className="border-gray-400 text-gray-700 placeholder-gray-400 focus:border-pink-700 focus:ring-pink-700"
+    <div className="min-h-screen flex">
+      {/* Left Side Gradient (60% Width) with Text */}
+      <div
+        className="hidden lg:flex w-3/5 items-center justify-center"
+        style={{
+          background: "linear-gradient(to bottom right, #990b60, #4c0657)",
+        }}
+      >
+        <div className="flex flex-col items-center space-y-6">
+          <h2 className="text-6xl font-bold text-white text-center px-8">
+            Register to<br /> Start Your Investment <br />Journey!
+          </h2>
+        </div>
+      </div>
+
+      {/* Right Side Form (40% Width, Centered) */}
+      <div className="w-full lg:w-2/5 flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          <div className="flex flex-row items-center justify-center space-x-1 mb-6">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUB90GXU0XhgZXJ3Le3Yj9CHrNlooymbSchw&s"
+              alt="easyDrop Logo"
+              className="w-10 h-10"
             />
-            <Input
-              type="tel"
-              name="phoneNumber"
-              placeholder="Phone Number"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-              className="border-gray-400 text-gray-700 placeholder-gray-400 focus:border-pink-700 focus:ring-pink-700"
-            />
-            <Input
-              type="text"
-              name="nid"
-              placeholder="NID"
-              value={formData.nid}
-              onChange={handleChange}
-              required
-              className="border-gray-400 text-gray-700 placeholder-gray-400 focus:border-pink-700 focus:ring-pink-700"
-            />
-            <Input
-              type="text"
-              name="profession"
-              placeholder="Profession"
-              value={formData.profession}
-              onChange={handleChange}
-              required
-              className="border-gray-400 text-gray-700 placeholder-gray-400 focus:border-pink-700 focus:ring-pink-700"
-            />
-            <Input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="border-gray-400 text-gray-700 placeholder-gray-400 focus:border-pink-700 focus:ring-pink-700"
-            />
-            <Button
-              type="submit"
-              className="w-full border border-purple-700 px-8 rounded-sm text-purple-700 hover:bg-purple-700 hover:text-white"
-            >
-              Register
-            </Button>
-          </form>
+            <h1 className="text-3xl font-bold text-purple-800">easyDrop</h1>
+          </div>
+          <div className="rounded-sm p-6">
+            <h3 className="text-xl font-semibold text-center text-gray-800 mb-6">
+              Create Your Own Account
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <LogInInput
+                type="text"
+                name="fullName"
+                placeholder="Full Name"
+                value={formData.fullName}
+                onChange={handleChange}
+                label="Full Name"
+                required
+              />
+              <LogInInput
+                type="tel"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                label="Phone Number"
+                required
+              />
+              <LogInInput
+                type="text"
+                name="nid"
+                placeholder="NID"
+                value={formData.nid}
+                onChange={handleChange}
+                label="NID"
+                required
+              />
+              <LogInInput
+                type="text"
+                name="profession"
+                placeholder="Profession"
+                value={formData.profession}
+                onChange={handleChange}
+                label="Profession"
+                required
+              />
+              <LogInInput
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                label="Password"
+                required
+              />
+              <Button
+                type="submit"
+                variant="logInButton"
+              >
+                Register
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

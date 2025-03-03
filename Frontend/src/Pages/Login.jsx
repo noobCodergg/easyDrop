@@ -1,36 +1,91 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { cn } from "../lib/utils";
+import { Button } from "../Components/ui/button";
+import { LogInInput } from "../Components/ui/input";
 
-import {Button} from '../Components/ui/button'
+const LogIn = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    nid: "",
+    profession: "",
+    password: "",
+  });
 
-const Login = () => {
-  const navigate = useNavigate();
-
-  const getPrint = async () => {
-    await Print();
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (isLoggedIn) {
-      navigate("/dashboard");
-    }
-  }, []);
-
-  const handleLogin = () => {
-    localStorage.setItem("isLoggedIn", "true");
-    navigate("/dashboard");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form Data Submitted:", formData);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-4">
-      <h1 className="text-2xl font-bold">Login Page</h1>
-      <Button onClick={handleLogin} variant="default" className="w-40 py-2 text-lg">
-        Log In
-      </Button>
+    <div className="min-h-screen flex">
+      {/* Left Side Gradient (60% Width) with Text */}
+      <div
+        className="hidden lg:flex w-3/5 items-center justify-center"
+        style={{
+          background: "linear-gradient(to bottom right, #990b60, #4c0657)",
+        }}
+      >
+        <div className="flex flex-col items-center space-y-6">
+          <h2 className="text-6xl font-bold text-white text-center px-8">
+          Welcome Back to<br/>
+Your Dropshipping<br/>
+Hub!
+          </h2>
+        </div>
+      </div>
+
+      {/* Right Side Form (40% Width, Centered) */}
+      <div className="w-full lg:w-2/5 flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          <div className="flex flex-row items-center justify-center space-x-1 mb-6">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUB90GXU0XhgZXJ3Le3Yj9CHrNlooymbSchw&s"
+              alt="easyDrop Logo"
+              className="w-10 h-10"
+            />
+            <h1 className="text-3xl font-bold text-purple-800">easyDrop</h1>
+          </div>
+          <div className="rounded-sm p-6">
+            <h3 className="text-xl font-semibold text-center text-gray-800 mb-6">
+              Log into Your Account
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-6">
+    
+              <LogInInput
+                type="tel"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                label="Phone Number"
+                required
+              />
+              <LogInInput
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                label="Password"
+                required
+              />
+              <Button
+                type="submit"
+                variant="logInButton"
+              >
+                Register
+              </Button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Login;
-
+export default LogIn;
