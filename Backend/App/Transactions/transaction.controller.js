@@ -58,13 +58,13 @@ const createTransaction = async (req, res) => {
         await trx("summary").update({
           total_credit: totalCredit,
           total_debit: totalDebit,
-          total_balance: totalBalance, // Corrected from total_balane
+          total_balane: totalBalance, // Corrected from total_balane
         });
       } else {
         await trx("summary").insert({
           total_credit: isCredit ? creditValue : 0,
           total_debit: isDebit ? debitValue : 0,
-          total_balance: creditValue - debitValue, // Corrected from total_balane
+          total_balane: creditValue - debitValue, // Corrected from total_balane
         });
       }
     });
@@ -156,7 +156,7 @@ const updateTransaction = async (req, res) => {
       await trx("summary").update({
         total_credit: totalCredit,
         total_debit: totalDebit,
-        total_balance: totalBalance, // Corrected from total_balane
+        total_balane: totalBalance, // Corrected from total_balane
       });
     });
 

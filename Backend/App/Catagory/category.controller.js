@@ -17,8 +17,8 @@ const createCategory = async (req, res) => {
   }
 
   try {
-    await db("category").insert({ name }); // Fixed typo: catagory → category
-    const categories = await db("category").select("*"); // Fixed typo: catagory → category
+    await db("catagory").insert({ name }); // Fixed typo: catagory → category
+    const categories = await db("catagory").select("*"); // Fixed typo: catagory → category
 
     return res.status(statusCode.OK).json({
       flag: "SUCCESS", // Standardized flag field name
@@ -32,7 +32,7 @@ const createCategory = async (req, res) => {
 
 const getCategory = async (req, res) => {
   try {
-    const categories = await db("category").select("*"); // Fixed typo: catagory → category
+    const categories = await db("catagory").select("*"); // Fixed typo: catagory → category
 
     return res.status(statusCode.OK).json({
       flag: "SUCCESS",
