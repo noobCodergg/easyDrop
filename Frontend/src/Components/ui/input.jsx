@@ -17,26 +17,34 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
 Input.displayName = "Input"
 
 
-const LogInInput = React.forwardRef(({ className, type, label, ...props }, ref) => {
+const LogInInput = React.forwardRef(({ className, type, label, icon, ...props }, ref) => {
   return (
     <div className="space-y-1">
-      {label && (
-        <label className="text-xl font-bold">
-          {label}
-        </label>
-      )}
-      <input
-        type={type}
-        className={cn(
-          "flex h-9 w-full bg-gray-200 border border-gray-600 rounded text-sm p-4",
-          className
+      {label && <label className="text-xl font-bold">{label}</label>}
+      <div className="relative">
+        <input
+          type={type}
+          className={cn(
+            "flex h-10 w-full bg-gray-200 rounded text-sm p-4 pr-10", // Ensure space for the icon
+            className
+          )}
+          ref={ref}
+          {...props}
+        />
+        {icon && (
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
+          >
+            {icon}
+          </button>
         )}
-        ref={ref}
-        {...props}
-      />
+      </div>
     </div>
   );
 });
+
+
 Input.displayName = "LogInInput";
 
 export { Input,LogInInput }

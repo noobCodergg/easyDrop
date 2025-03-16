@@ -12,6 +12,11 @@ import Analytics from "./Pages/Analytics";
 import RequestPayment from "./Pages/RequestPayment";
 import TotalExpense from "./Pages/TotalExpense";
 import TotalIncome from "./Pages/TotalIncome";
+import JoinWebinar from "./Pages/JoinWebinar";
+import VendorProductOrderManagement from "./Pages/VendorProductOrderManagement";
+import ManageOrders from "./Pages/ManageOrders";
+import ManageProducts from "./Pages/ManageProducts";
+
 
 
 
@@ -31,6 +36,11 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>} />
         <Route path="/transaction" element={<ProtectedRoute><Transaction/></ProtectedRoute>} />
         <Route path="/finance" element={<ProtectedRoute><Finance/></ProtectedRoute>} />
+        <Route path="/joinwebiner" element={<ProtectedRoute><JoinWebinar/></ProtectedRoute>}/>
+        <Route path="/manage" element={<ProtectedRoute><VendorProductOrderManagement/></ProtectedRoute>}>
+         <Route index element={<ManageOrders/>}/>
+         <Route path="products" element={<ManageProducts/>}/>
+        </Route>
       </Routes>
    
   );

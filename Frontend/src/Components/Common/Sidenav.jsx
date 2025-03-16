@@ -11,7 +11,7 @@ const Sidenav = () => {
 
   return (
     <aside
-      className={`fixed top-0 pt-20 left-0 h-screen bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-700 shadow-lg z-40 transition-all duration-300 ${
+      className={`relative top-0 pt-20 left-0 h-screen bg-up shadow-lg z-40 transition-all duration-300 ${
         isExpanded ? "w-64" : "w-16"
       }`}
     >

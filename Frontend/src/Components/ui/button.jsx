@@ -20,7 +20,8 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
 
-        logInButton: 'bg-purple-700 w-full text-white rounded text-xl hover:bg-purple-900'
+        logInButton: 'bg-login w-full text-white rounded text-xl  flex items-center justify-center',
+        Investor : 'bg-mouve text-white shadow-md hover:shadow-lg' 
       },
       size: {
         default: "h-9 px-4 py-2",

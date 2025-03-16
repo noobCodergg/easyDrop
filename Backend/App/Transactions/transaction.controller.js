@@ -81,7 +81,7 @@ const createTransaction = async (req, res) => {
 const getTransaction = async (req, res) => {
   try {
     let { fromDate, toDate, category, remarks } = req.params;
-
+    console.log(fromDate,toDate)
     // Set default date range if not provided
     const defaultFromDate = moment().startOf("month").format("YYYY-MM-DD 00:00:00");
     const defaultToDate = moment().format("YYYY-MM-DD 23:59:59");
