@@ -20,6 +20,7 @@ import ManageProducts from "./Pages/ManageProducts";
 
 
 
+
 function App() {
   return (
   
@@ -37,10 +38,12 @@ function App() {
         <Route path="/transaction" element={<ProtectedRoute><Transaction/></ProtectedRoute>} />
         <Route path="/finance" element={<ProtectedRoute><Finance/></ProtectedRoute>} />
         <Route path="/joinwebiner" element={<ProtectedRoute><JoinWebinar/></ProtectedRoute>}/>
+        
         <Route path="/manage" element={<ProtectedRoute><VendorProductOrderManagement/></ProtectedRoute>}>
          <Route index element={<ManageOrders/>}/>
          <Route path="products" element={<ManageProducts/>}/>
         </Route>
+       
       </Routes>
    
   );

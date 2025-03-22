@@ -1,22 +1,31 @@
-import React, { useState } from 'react'
-import { CalendarIcon } from 'lucide-react'
-import { format } from 'date-fns'
-import { cn } from '../../lib/utils' // Assuming you have this utility from shadcn/ui setup
+import React, { useContext, useState } from 'react';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '../../lib/utils';
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from '../ui/popover'
-import { Button } from '../ui/button'
-import { Calendar } from '../ui/calendar'
+} from '../ui/popover';
+import { Button } from '../ui/button';
+import { Calendar } from '../ui/calendar';
+import { OrderContext } from '../../Pages/ManageOrders';
 
-const DatePicker = () => {
-  const [date, setDate] = useState(null) // Initialize with null or a default Date object
+const DatePicker = ({ type }) => {
+  const [date, setDate] = useState(null);
+  const { setStartDate, setEndDate } = useContext(OrderContext);
 
-  const handleDateChange = (selectedDate) => {
-    setDate(selectedDate)
-    console.log('Selected date:', selectedDate) // Optional: for debugging
-  }
+  const handleStartDateChange = (selectedDate) => {
+    setDate(selectedDate); // Update local state
+    setStartDate(selectedDate); // Update context state
+    console.log('Selected date:', selectedDate);
+  };
+
+  const handleEndDateChange = (selectedDate) => {
+    setDate(selectedDate); // Update local state
+    setEndDate(selectedDate); // Update context state
+    console.log('Selected date:', selectedDate);
+  };
 
   return (
     <Popover>
@@ -37,12 +46,12 @@ const DatePicker = () => {
           className="bg-white"
           mode="single"
           selected={date}
-          onSelect={handleDateChange} // Pass the function directly
+          onSelect={type === 'start' ? handleStartDateChange : handleEndDateChange}
           initialFocus
         />
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};
 
-export default DatePicker
+export default DatePicker;

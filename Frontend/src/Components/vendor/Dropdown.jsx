@@ -1,55 +1,71 @@
-import * as React from "react"
+import * as React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
-import { Button } from "../ui/button"
-import { ChevronDown } from "lucide-react"
-
-const Dropdown = ({ initialStatus, onStatusChange }) => {
-  // Use useEffect to update status when initialStatus changes
-  const [status, setStatus] = React.useState(initialStatus || "Pending") // Fallback to "Pending" if no initialStatus
-
-  // Sync status with initialStatus when it changes
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { ChevronDown } from "lucide-react";
+import { updateOrderStatus } from "../../Api/OrdersApi/OrdersApi";
+import { OrderContext } from "../../Pages/ManageOrders";
+const DropDown = ({ initialStatus, onStatusChange, statusOptions = [],orderId='' }) => {
+  const [status, setStatus] = React.useState(initialStatus || "Pending");
+  const {setValue}=React.useContext(OrderContext)
+  
   React.useEffect(() => {
-    if (initialStatus) {
-      setStatus(initialStatus)
+    setStatus(initialStatus || "Pending");
+  }, [initialStatus]);
+
+  const handleStatusSelect = async(newStatus) => {
+    setStatus(newStatus);
+   setValue(newStatus)
+    if (onStatusChange) {
+      onStatusChange(newStatus);
     }
-  }, [initialStatus])
-
-  const statusOptions = [
-    { value: "Completed", label: "Completed" },
-    { value: "Pending", label: "Pending" },
-    { value: "Cancelled", label: "Cancelled" },
-  ]
-
-  const handleStatusSelect = (newStatus) => {
-    setStatus(newStatus)
-    onStatusChange(newStatus)
+   
+    if(orderId!==''){
+    try{
+      const response=await updateOrderStatus(orderId,newStatus)
+    }catch(error){
+      console.log(error)
+    }
   }
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-[120px] justify-between">
-          {status || "Select Status"} {/* Show placeholder if status is empty */}
-          <ChevronDown className="ml-2 h-4 w-4" />
+        <Button variant="outline">
+        {status === 0 ? (
+    <p>Completed</p>
+  ) : status === 1 ? (
+    <p>Pending</p>
+  ) : status === 2 ? (
+    <p>Cancelled</p>
+  ) : (
+    "Select Status"
+  )}
+
+          <ChevronDown className="h-4 w-6" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {statusOptions.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onClick={() => handleStatusSelect(option.value)}
-          >
-            {option.label}
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent align="end" className='bg-white'>
+        {statusOptions.length > 0 ? (
+          statusOptions.map((option) => (
+            <DropdownMenuItem 
+              key={option.value}
+              onClick={() => handleStatusSelect(option.value)}
+            >
+              {option.label}
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <p className="px-2 py-1 text-gray-500">No options available</p>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
+  );
+};
 
-export default Dropdown
+export default DropDown;

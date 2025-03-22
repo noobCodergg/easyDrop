@@ -21,7 +21,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
 
         logInButton: 'bg-login w-full text-white rounded text-xl  flex items-center justify-center',
-        Investor : 'bg-mouve text-white shadow-md hover:shadow-lg' 
+        Investor : 'bg-mouve text-white shadow-md hover:shadow-lg' ,
+        delete: 'bg-red-500 text-white'
       },
       size: {
         default: "h-9 px-4 py-2",

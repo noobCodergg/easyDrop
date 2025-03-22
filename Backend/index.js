@@ -23,6 +23,7 @@ require('./app/catagory/category.routes')(app)
 require('./app/transactions/transaction.routes')(app)
 require('./app/finance/finance.routes')(app)
 require('./app/vendor/vendor.routes')(app)
+require('./app/orders/order.routes')(app)
 
 
 

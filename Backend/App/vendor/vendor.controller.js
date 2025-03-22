@@ -109,6 +109,8 @@ const vendorLogin = async (req, res) => {
     }
 };
 
+
+
 module.exports = {
   createVendor,vendorLogin
 };
