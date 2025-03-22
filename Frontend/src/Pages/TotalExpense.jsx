@@ -25,7 +25,7 @@ const TotalExpense = () => {
   const fetchData = async (formData) => {
     try {
       const response = await getTransactions(formData);
-      console.log('API Response:', response.data.data);
+      
       if (response && Array.isArray(response.data.data)) {
         return response.data.data.map(row => ({
           ...row,

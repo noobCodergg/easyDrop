@@ -77,7 +77,7 @@ const Finance = () => {
       {showDetails && (
         <div className="space-y-4">
           {/* Date Range Picker with Search Button (Top Right) */}
-          <div className="flex justify-end space-x-2 mb-4">
+          <div className="flex justify-center sm:justify-end space-x-2 mb-4 ">
             <Popover>
               <PopoverTrigger asChild>
                 <Button

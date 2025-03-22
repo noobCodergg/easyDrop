@@ -40,7 +40,7 @@ const TotalIncome = () => {
             const formattedEndDate = endDate ? endDate.toISOString().split("T")[0] : null;
 
             const response = await getFinance(formattedStartDate, formattedEndDate);
-            console.log(response.data.data.total)
+            
             setFinanceData(response.data.data.total);
         } catch (error) {
             console.error("Error occurred", error);

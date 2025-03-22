@@ -119,9 +119,12 @@ const orderDetails=async (req,res)=>{
       "oi.printed",
        "oi.stock_updated",
        "oi.updated_at",
-       "oi.updated_by"
+       "oi.updated_by",
+       "pv.variant_type",
+       "pv.variant",
     ).join("order_info as oi","o.order_id","oi.id")
     .join("products as p","o.product_id","p.id")
+    .join("product_variants as pv","o.variant_id","pv.id")
     .where("o.order_id",orderId)
 
     res.status(statusCode.OK).json(orderDetails)
@@ -131,5 +134,75 @@ const orderDetails=async (req,res)=>{
   }
 }
 
-module.exports = { getOrders,updateOrderStatus,orderDetails };
+
+const adminOrders=async(req,res)=>{
+  try {
+    const { startDate, endDate } = req.query; 
+
+    console.log(startDate,endDate)
+    
+   if (!validateApiFields({ startDate,endDate })) {
+    printError("Api Field(s) Errors", "createTransaction");
+    return res.status(statusCode.BAD_REQUEST).json({
+      flag: "FAIL",
+      msg: "Api Field(s) Errors",
+    });
+  }
+
+    const orders = await db("orders")
+      .select(
+        "orders.date AS Order_Date",
+        "order_info.id AS ORD_ID",
+        db.raw(`CONCAT_WS("-", "P", orders.product_id, orders.variant_id) AS Product_Id`),
+        "products.name AS Product_Name",
+        db.raw(`CONCAT_WS(": ", product_variants.variant_type, product_variants.variant) AS Variant`),
+        "product_categories.category AS Category",
+        "orders.quantity AS Quantity",
+        "products.buying_price AS Buying_Price",
+        "products.resell_price AS Resell_Price",
+        "products.retail_price AS Retail_Price",
+        "order_info.cod AS COD",
+        "order_info.delivery_charge AS Delivery_Charge",
+        db.raw(`ROUND(products.resell_price - products.buying_price, 2) AS Easydrop_Margin`),
+        db.raw(`
+          ROUND(((order_info.cod - order_info.delivery_charge - products.resell_price) - (order_info.cod * 0.015)), 2) AS Dropshipper_Margin
+        `),
+        db.raw(`
+          CASE 
+            WHEN order_info.status < 0 THEN "Cancel"
+            WHEN order_info.status = 0 THEN "Pending"
+            WHEN order_info.status = 1 THEN "Approved"
+            WHEN order_info.status = 2 THEN "Shipped"
+            WHEN order_info.status = 3 THEN "Delivered"
+          END AS Status
+        `),
+        db.raw(`
+          CASE 
+            WHEN delivery_info.delivery_type = 1 THEN "In House"
+            WHEN delivery_info.delivery_type = 2 THEN "Steadfast"
+            ELSE "Not Selected"
+          END AS Courier
+        `),
+        "order_info.order_by",
+        db("users").select("username").whereRaw("users.id = order_info.order_by").as("Dropshipper")
+      )
+      .leftJoin("products", "orders.product_id", "products.id")
+      .leftJoin("product_variants", "orders.variant_id", "product_variants.id")
+      .leftJoin("order_info", "orders.order_id", "order_info.id")
+      .leftJoin("product_categories", "products.category_id", "product_categories.id")
+      .leftJoin("delivery_info", "orders.order_id", "delivery_info.order_id")
+      .whereBetween("orders.date", [startDate, endDate]);
+
+    return res.json({
+      flag:"SUccess",
+      data:orders
+    });
+  } catch (error) {
+    catchBlockCodes(res,error)
+  }
+}
+
+
+
+module.exports = { getOrders,updateOrderStatus,orderDetails,adminOrders };
 

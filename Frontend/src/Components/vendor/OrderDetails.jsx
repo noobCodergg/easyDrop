@@ -13,6 +13,7 @@ function OrderDetails({ orderId }) {
   const fetchOrderDetails = async () => {
     try {
       const response = await getOrderDetails(orderId);
+      console.log(response.data)
       if (response.data.length > 0) {
         setData(response.data[0]);
       } else {
@@ -49,63 +50,72 @@ function OrderDetails({ orderId }) {
               />
               <div>
                 <h3 className="text-lg font-semibold">{data.product_name}</h3>
-                <p className="text-gray-600">Quantity: <span className="font-medium">{data.quantity}</span></p>
-                <p className="text-gray-600">Total: <span className="font-medium">{data.total} Tk.</span></p>
+                <p className="text-gray-600">Quantity : <span className="font-medium">{data.quantity}</span></p>
+                <p className="text-gray-600">Total : <span className="font-medium">{data.total} Tk.</span></p>
               </div>
             </div>
 
             {/* Order Info */}
             <div className="grid grid-cols-2 gap-6 mb-6 border-b pb-4">
               <div>
-                <p className="text-gray-600">Category: <span className="font-medium">{data.category_id}</span></p>
-                <p className="text-gray-600">Resell Price: <span className="font-medium">{data.resell_price} Tk.</span></p>
+                <p className="text-gray-600">Category : <span className="font-medium">{data.category_id}</span></p>
+                <p className="text-gray-600">Resell Price : <span className="font-medium">{data.resell_price} Tk.</span></p>
               </div>
               <div>
-                <p className="text-gray-600">Variant: <span className="font-medium">{data.variant_id}</span></p>
-                <p className="text-gray-600">Retail Price: <span className="font-medium">{data.retail_price ? data.retail_price : "0"} Tk.</span></p>
+                
+                <p className="text-gray-600">{data.variant_type} : <span className="font-medium">{data.variant} </span></p>
               </div>
             </div>
 
-            {/* Customer Info */}
-            <div className="mb-6 border-b pb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Customer Details</h3>
-              <p className="text-gray-600">Name: <span className="font-medium">{data.customer_name}</span></p>
-              <p className="text-gray-600">Phone: <span className="font-medium">{data.number}</span></p>
-              <p className="text-gray-600">Address: <span className="font-medium">{data.street}, {data.city}, {data.district}</span></p>
-              <p className="text-gray-600">Remarks: <span className="font-medium">{data.remarks || "None"}</span></p>
-            </div>
+           
 
             {/* Status Section */}
             <div className="grid grid-cols-2 gap-6 mb-6 border-b pb-4">
               <div>
-                <p className="text-gray-600">Status: <span className="font-semibold">{data.status}</span></p>
-                <p className="text-gray-600">Shipped: <span className="font-medium">{data.shipped ? "Yes" : "No"}</span></p>
-                <p className="text-gray-600">Printed: <span className="font-medium">{data.printed ? "Yes" : "No"}</span></p>
+              <p className="text-gray-600">
+  Status:  
+  <span className="font-semibold">
+    {data.status === 0 ? "Pending" 
+      : data.status === 1 ? "Approved" 
+      : data.status === 2 ? "Shipped" 
+      : data.status === 3 ? "Delivered" 
+      : "Cancelled"}
+  </span>
+</p>
+
+                <p className="text-gray-600">Printed : <span className="font-medium">{data.printed ? "Yes" : "No"}</span></p>
               </div>
-              <div>
-                <p className="text-gray-600">Cancelled: <span className="font-medium">{data.cancelled ? "Yes" : "No"}</span></p>
-                <p className="text-gray-600">Cancel Reason: <span className="font-medium">{data.cancel_details || "N/A"}</span></p>
-                <p className="text-gray-600">Cancellation Fee: <span className="font-medium">{data.cancellation_charged} Tk.</span></p>
+                {
+                  data.cancelled===1 &&
+                  <div>
+                <p className="text-gray-600">Cancel Reason : <span className="font-medium">{data.cancel_details || "N/A"}</span></p>
+                <p className="text-gray-600">Cancellation Fee : <span className="font-medium">{data.cancellation_charged} Tk.</span></p>
               </div>
+                }
+              
             </div>
 
             {/* Payment & Updates */}
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
-                <p className="text-gray-600">Advance Paid: <span className="font-medium">{data.advance} Tk.</span></p>
-                <p className="text-gray-600">Delivery Charge: <span className="font-medium">{data.delivery_charge} Tk.</span></p>
-                <p className="text-gray-600">Discount: <span className="font-medium">{data.discount} Tk.</span></p>
-                <p className="text-gray-600">Paid Amount: <span className="font-medium">{data.paid} Tk.</span></p>
+                <p className="text-gray-600">Advance Paid : <span className="font-medium">{data.advance} Tk.</span></p>
+                <p className="text-gray-600">Delivery Charge : <span className="font-medium">{data.delivery_charge} Tk.</span></p>
+                <p className="text-gray-600">Discount : <span className="font-medium">{data.discount} Tk.</span></p>
+                <p className="text-gray-600">Paid Amount : <span className="font-medium">{data.paid} Tk.</span></p>
               </div>
               <div>
-                <p className="text-gray-600">Stock Updated: <span className="font-medium">{data.stock_updated ? "Yes" : "No"}</span></p>
-                <p className="text-gray-600">Updated By: <span className="font-medium">{data.updated_by}</span></p>
-                <p className="text-gray-600">Last Updated: <span className="font-medium">{data.updated_at}</span></p>
+                {
+                  data.updated_by && <p className="text-gray-600">Updated By : <span className="font-medium">{data.updated_by}</span></p>
+                }
+                
+                { data.updated_at &&
+                <p className="text-gray-600">Last Updated : <span className="font-medium">{data.updated_at}</span></p>
+            }
               </div>
             </div>
           </>
         ) : (
-          <p className="text-center text-gray-500">Loading order details...</p>
+          <p className="text-center text-gray-500">No Order Details Found!</p>
         )}
 
         {/* Close Button */}

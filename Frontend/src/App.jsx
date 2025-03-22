@@ -16,6 +16,7 @@ import JoinWebinar from "./Pages/JoinWebinar";
 import VendorProductOrderManagement from "./Pages/VendorProductOrderManagement";
 import ManageOrders from "./Pages/ManageOrders";
 import ManageProducts from "./Pages/ManageProducts";
+import AdminOrder from "./Pages/AdminOrder";
 
 
 
@@ -43,7 +44,7 @@ function App() {
          <Route index element={<ManageOrders/>}/>
          <Route path="products" element={<ManageProducts/>}/>
         </Route>
-       
+       <Route path="/adminorders" element={<AdminOrder/>}/>
       </Routes>
    
   );

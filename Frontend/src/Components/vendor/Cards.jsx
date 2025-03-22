@@ -9,7 +9,7 @@ const Cards = () => {
       color: "bg-blue-100 text-blue-800",
     },
     {
-      title: "Accepted Orders",
+      title: "Approved Orders",
       amount: 1000,
       color: "bg-green-100 text-green-800",
     },
@@ -23,19 +23,29 @@ const Cards = () => {
       amount: 500,
       color: "bg-red-100 text-red-800",
     },
+    {
+      title: "Shipped Orders",
+      amount: 200,
+      color: "bg-orange-100 text-orange-800"
+    },
+    {
+      title: "Delivered Orders",
+      amount: 300,
+      color: "bg-purple-100 text-purple-800"
+    }
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 p-4 mb-10">
+    <div className="flex items-center justify-center mb-10 gap-4 sm:flex-nowrap flex-wrap">
       {data.map((item, index) => (
-        <Card key={index} className="w-full shadow-md hover:shadow-lg transition-shadow">
+        <Card key={index} className="w-full shadow-md hover:shadow-lg transition-shadow w-1/2 sm:w-1/4">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
               {item.title}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between ">
               <span className="text-2xl font-bold text-gray-900">
                 {item.amount}
               </span>

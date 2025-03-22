@@ -24,7 +24,7 @@ require('./app/transactions/transaction.routes')(app)
 require('./app/finance/finance.routes')(app)
 require('./app/vendor/vendor.routes')(app)
 require('./app/orders/order.routes')(app)
-
+require('./app/admin/admin.routes')(app)
 
 
 const PORT = 5000;
