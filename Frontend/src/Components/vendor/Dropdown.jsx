@@ -34,16 +34,23 @@ const DropDown = ({ initialStatus, onStatusChange, statusOptions = [],orderId=''
   };
 
   return (
-    <DropdownMenu>
+    <div className="pb-6">
+    <DropdownMenu >
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
         {status === 0 ? (
-    <p>Completed</p>
-  ) : status === 1 ? (
     <p>Pending</p>
+  ) : status === 1 ? (
+    <p>Approved</p>
   ) : status === 2 ? (
-    <p>Cancelled</p>
-  ) : (
+    <p>Shipped</p>  
+  ) : 
+    status === 3 ? (
+      <p>Delivered</p>
+    ): status === -1 ? (
+      <p>Cancelled</p>
+    ):
+  (
     "Select Status"
   )}
 
@@ -65,6 +72,7 @@ const DropDown = ({ initialStatus, onStatusChange, statusOptions = [],orderId=''
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+    </div>
   );
 };
 

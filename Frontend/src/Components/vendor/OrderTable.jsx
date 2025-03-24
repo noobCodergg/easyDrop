@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { OrderContext } from "../../Pages/ManageOrders";
 import { getOrders } from "../../Api/OrdersApi/OrdersApi";
-import { format } from "date-fns";
+import moment from "moment";
 import {
   Table,
   TableBody,
@@ -11,107 +11,76 @@ import {
   TableRow,
 } from "../ui/table";
 import { Button } from "../ui/button";
-import { Eye, Edit, Trash2 } from "lucide-react";
-import DropDown from "./DropDown";
+import { Eye } from "lucide-react";
 import OrderDetails from "./OrderDetails";
 
 export const modalContext = createContext();
 const OrderTable = () => {
-  const statusOption = [
-    { value: 0, label: "Completed" },
-    { value: 1, label: "Pending" },
-    { value: 2, label: "Cancelled" },
-  ];
   const { text, value, startDate, endDate } = useContext(OrderContext);
 
   const [allOrders, setAllOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
-  const [editMode, setEditMode] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderId, setOrderID] = useState();
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await getOrders(5);
+        const response = await getOrders(5, text, value, startDate, endDate);
 
         const ordersWithUniqueIds = response.data.map((order, index) => ({
           ...order,
           id: order.id ?? `fallback-${index}`,
         }));
         setAllOrders(ordersWithUniqueIds);
-        setFilteredOrders(ordersWithUniqueIds);
       } catch (error) {
         console.log("Error Occurred:", error);
       }
     };
     fetchOrders();
-  }, []);
-
-  useEffect(() => {
-    let filtered = [...allOrders];
-    if (text) {
-      filtered = filtered.filter((order) => {
-        const lowerText = text.toLowerCase();
-        return (
-          (order.order_id &&
-            String(order.order_id).toLowerCase().includes(lowerText)) ||
-          (order.product_name &&
-            order.product_name.toLowerCase().includes(lowerText))
-        );
-      });
-    }
-
-    if (value) {
-      filtered = filtered.filter((order) => order.status === value);
-    }
-
-    const formattedStartDate = startDate
-      ? format(startDate, "yyyy-MM-dd")
-      : null;
-    const formattedEndDate = endDate ? format(endDate, "yyyy-MM-dd") : null;
-    if (formattedStartDate) {
-      filtered = filtered.filter((order) => order.date >= formattedStartDate);
-    }
-    if (formattedEndDate) {
-      filtered = filtered.filter((order) => order.date <= formattedEndDate);
-    }
-    setFilteredOrders(filtered);
-  }, [text, value, startDate, endDate, allOrders]);
+  }, [text, value, startDate, endDate]);
 
   const handleModal = (orderId) => {
-    console.log("Hi", orderId);
     setIsModalOpen(!isModalOpen);
     setOrderID(orderId);
   };
 
   return (
     <div className="w-full overflow-x-auto mt-10">
-      <Table>
+      <Table className="min-w-full">
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px] text-left">Sl.</TableHead>
-            <TableHead className="text-left">Order ID</TableHead>
+            <TableHead className="text-left">ID</TableHead>
             <TableHead className="text-left">Date</TableHead>
-            <TableHead className="text-left">Product Name</TableHead>
+            <TableHead className="text-left">Name</TableHead>
             <TableHead className="text-left">Image</TableHead>
             <TableHead className="text-left">Status</TableHead>
             <TableHead className="text-center">View</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredOrders.map((order, index) => (
+          {allOrders.map((order, index) => (
             <TableRow key={order.id}>
-              <TableCell className="text-left">{index + 1}</TableCell>
-              <TableCell className="text-left">{order.order_id}</TableCell>
-              <TableCell className="text-left">{order.date}</TableCell>
-              <TableCell className="text-left">{order.product_name}</TableCell>
+              <TableCell className="text-left whitespace-nowrap">
+                {index + 1}
+              </TableCell>
+              <TableCell className="text-left whitespace-nowrap">
+                {order.order_id}
+              </TableCell>
+              <TableCell className="text-left whitespace-nowrap">
+                {moment(order.date).format("YYYY-MM-DD")}
+              </TableCell>
+              <TableCell className="text-left whitespace-nowrap">
+                {order.product_name.length > 100
+                  ? `${order.product_name.substring(0, 50)}...`
+                  : order.product_name}
+              </TableCell>
+              {isModalOpen && (
+                <modalContext.Provider value={{ setIsModalOpen }}>
+                  <OrderDetails orderId={orderId} />
+                </modalContext.Provider>
+              )}
               <TableCell className="text-left">
-                {isModalOpen && (
-                  <modalContext.Provider value={{ setIsModalOpen }}>
-                    <OrderDetails orderId={orderId} />
-                  </modalContext.Provider>
-                )}
                 <div className="flex items-center">
                   <img
                     src={order.productImage}
@@ -120,26 +89,26 @@ const OrderTable = () => {
                   />
                 </div>
               </TableCell>
-              <TableCell className="text-left">
+              <TableCell className="text-center whitespace-nowrap">
                 <span>
                   {order.status === 0 ? (
-                    <p className="bg-yellow-200 flex items-center justify-center text-yellow-800 border rounded-full">
+                    <p className="bg-yellow-200 text-yellow-800 border rounded-full px-2 py-1">
                       Pending
                     </p>
                   ) : order.status === 1 ? (
-                    <p className="bg-green-200 flex items-center justify-center text-green-800 border rounded-full">
+                    <p className="bg-green-200 text-green-800 border rounded-full px-2 py-1">
                       Approved
                     </p>
                   ) : order.status === 2 ? (
-                    <p className="bg-orange-200 flex items-center justify-center text-orange-800 border rounded-full">
+                    <p className="bg-orange-200 text-orange-800 border rounded-full px-2 py-1">
                       Shipped
                     </p>
                   ) : order.status === 3 ? (
-                    <p className="bg-purple-200 flex items-center justify-center text-purple-800 border rounded-full">
+                    <p className="bg-purple-200 text-purple-800 border rounded-full px-2 py-1">
                       Delivered
                     </p>
                   ) : order.id === -1 ? (
-                    <p className="bg-red-200 flex items-center justify-center text-red-800 border rounded-full">
+                    <p className="bg-red-200 text-red-800 border rounded-full px-2 py-1">
                       Cancelled
                     </p>
                   ) : null}

@@ -2,42 +2,63 @@ const db = require('../config/db'); // Ensure the correct path to db.js
 const validateApiFields =require('../helpers/validateApiKeys')
 const { printError} =require('../helpers/controllerProfile')
 const {statusCode}=require('../helpers/httpStatusCode')
-const {catchBlockCodes}=require('../helpers/catchBlockCodes')
+const {catchBlockCodes}=require('../helpers/catchBlockCodes');
+const moment = require('moment-timezone');
+
 const getOrders = async (req, res) => {
-    try {
-        
-        const {userId}=req.params;
+  try {
+    const { userId } = req.params;
+    const  { text, value, startDate, endDate } = req.query;
 
-        if (!validateApiFields({ userId })) {
-          printError("Api Field(s) Errors", "createTransaction");
-          return res.status(statusCode.BAD_REQUEST).json({
-            flag: "FAIL",
-            msg: "Api Field(s) Errors",
-          });
-        }
+    const formatStartDate = startDate ? moment(startDate).format("YYYY-MM-DD") : null;
+    const formatEndDate = endDate ? moment(endDate).format("YYYY-MM-DD") : null;
 
-        const orders = await db("orders as vo")
-            .select(
-                "vo.order_id",
-                "vo.date",
-                "vp.name as product_name",
-                "vp.main_img as product_image",
-                "vod.status"
-            )
-            .join("order_info as vod", "vo.order_id", "vod.id") // Join order details
-            .join("products as vp", "vo.product_id", "vp.id") // Join products
-            .where("vp.vendor_id",userId)
-            
+    console.log(formatStartDate,formatEndDate)
 
-        if (orders.length === 0) {
-            return res.status(404).json({ message: "No orders found for this user" });
-        }
+    
 
-        res.status(statusCode.OK).json(orders);
-    } catch (err) {
-        catchBlockCodes(res,err)
+    if (!validateApiFields({ userId })) {
+      printError("Api Field(s) Errors", "getOrders");
+      return res.status(statusCode.BAD_REQUEST).json({
+        flag: "FAIL",
+        msg: "Api Field(s) Errors",
+      });
     }
+
+    let query = db("orders as o")
+      .select(
+        "o.order_id",
+        "o.date",
+        "p.name as product_name",
+        "p.main_img as product_image",
+        "oi.status"
+      )
+      .join("order_info as oi", "o.order_id", "oi.id") 
+      .join("products as p", "o.product_id", "p.id") 
+      .where("p.vendor_id", userId);
+
+    if (text) {
+      query = query.where("p.name", "like", `%${text}%`);
+    }
+
+    if (value) {
+      query = query.where("oi.status", value);
+    }
+
+    if (startDate && endDate) {
+      query = query.whereBetween("o.date", [formatStartDate, formatEndDate]);
+    }
+
+    const orders = await query;
+    
+    res.status(statusCode.OK).json(orders);
+  } catch (err) {
+    console.error("Error in getOrders:", err);
+    catchBlockCodes(res, err);
+  }
 };
+
+
 
 
 
@@ -122,9 +143,14 @@ const orderDetails=async (req,res)=>{
        "oi.updated_by",
        "pv.variant_type",
        "pv.variant",
+       "pc.category",
+       "o.additional_cost",
+       "di.tracking_id"
     ).join("order_info as oi","o.order_id","oi.id")
     .join("products as p","o.product_id","p.id")
     .join("product_variants as pv","o.variant_id","pv.id")
+    .join("product_categories as pc","p.category_id","pc.id")
+    .join("delivery_info as di","o.order_id","di.order_id")
     .where("o.order_id",orderId)
 
     res.status(statusCode.OK).json(orderDetails)
@@ -135,74 +161,34 @@ const orderDetails=async (req,res)=>{
 }
 
 
-const adminOrders=async(req,res)=>{
+const getOrdersByStatus=async(req,res)=>{
   try {
-    const { startDate, endDate } = req.query; 
-
-    console.log(startDate,endDate)
+    const {userId}=req.params;
     
-   if (!validateApiFields({ startDate,endDate })) {
-    printError("Api Field(s) Errors", "createTransaction");
-    return res.status(statusCode.BAD_REQUEST).json({
-      flag: "FAIL",
-      msg: "Api Field(s) Errors",
-    });
-  }
+    const result = await db("orders")
+    .join("products", "orders.product_id", "=", "products.id")
+    .join("order_info", "order_info.id", "=", "orders.order_id")
+    .where("products.vendor_id", userId)
+    .groupBy("products.vendor_id")
+    .select(
+      "products.vendor_id",
+      db.raw("COUNT(order_info.id) as total_orders"),
+      db.raw("SUM(CASE WHEN order_info.status = -1 THEN 1 ELSE 0 END) as cancelled_count"),
+      db.raw("SUM(CASE WHEN order_info.status = 0 THEN 1 ELSE 0 END) as pending_count"),
+      db.raw("SUM(CASE WHEN order_info.status = 1 THEN 1 ELSE 0 END) as approved_count"),
+      db.raw("SUM(CASE WHEN order_info.status = 2 THEN 1 ELSE 0 END) as shipped_count"),
+      db.raw("SUM(CASE WHEN order_info.status = 3 THEN 1 ELSE 0 END) as delivered_count")
+    );
 
-    const orders = await db("orders")
-      .select(
-        "orders.date AS Order_Date",
-        "order_info.id AS ORD_ID",
-        db.raw(`CONCAT_WS("-", "P", orders.product_id, orders.variant_id) AS Product_Id`),
-        "products.name AS Product_Name",
-        db.raw(`CONCAT_WS(": ", product_variants.variant_type, product_variants.variant) AS Variant`),
-        "product_categories.category AS Category",
-        "orders.quantity AS Quantity",
-        "products.buying_price AS Buying_Price",
-        "products.resell_price AS Resell_Price",
-        "products.retail_price AS Retail_Price",
-        "order_info.cod AS COD",
-        "order_info.delivery_charge AS Delivery_Charge",
-        db.raw(`ROUND(products.resell_price - products.buying_price, 2) AS Easydrop_Margin`),
-        db.raw(`
-          ROUND(((order_info.cod - order_info.delivery_charge - products.resell_price) - (order_info.cod * 0.015)), 2) AS Dropshipper_Margin
-        `),
-        db.raw(`
-          CASE 
-            WHEN order_info.status < 0 THEN "Cancel"
-            WHEN order_info.status = 0 THEN "Pending"
-            WHEN order_info.status = 1 THEN "Approved"
-            WHEN order_info.status = 2 THEN "Shipped"
-            WHEN order_info.status = 3 THEN "Delivered"
-          END AS Status
-        `),
-        db.raw(`
-          CASE 
-            WHEN delivery_info.delivery_type = 1 THEN "In House"
-            WHEN delivery_info.delivery_type = 2 THEN "Steadfast"
-            ELSE "Not Selected"
-          END AS Courier
-        `),
-        "order_info.order_by",
-        db("users").select("username").whereRaw("users.id = order_info.order_by").as("Dropshipper")
-      )
-      .leftJoin("products", "orders.product_id", "products.id")
-      .leftJoin("product_variants", "orders.variant_id", "product_variants.id")
-      .leftJoin("order_info", "orders.order_id", "order_info.id")
-      .leftJoin("product_categories", "products.category_id", "product_categories.id")
-      .leftJoin("delivery_info", "orders.order_id", "delivery_info.order_id")
-      .whereBetween("orders.date", [startDate, endDate]);
-
-    return res.json({
-      flag:"SUccess",
-      data:orders
-    });
+    res.status(statusCode.OK).json({
+      flag: "SUCCESS",
+      result:result[0],
+    })
   } catch (error) {
-    catchBlockCodes(res,error)
+    catchBlockCodes(res,error);
   }
 }
+ 
 
-
-
-module.exports = { getOrders,updateOrderStatus,orderDetails,adminOrders };
+module.exports = { getOrders,updateOrderStatus,orderDetails,getOrdersByStatus };
 

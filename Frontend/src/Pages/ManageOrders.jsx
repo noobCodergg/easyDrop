@@ -8,9 +8,11 @@ import Cards from "../Components/vendor/Cards";
 export const OrderContext = createContext();
 const ManageOrders = () => {
   const statusOption = [
-    { value: 0, label: "Completed" },
-    { value: 1, label: "Pending" },
-    { value: 2, label: "Cancelled" },
+    { value: 0, label: "Pending" },
+    { value: 1, label: "Approved" },
+    { value: 2, label: "Shipped" },
+    {value : 3, label : "Delivered"},
+    {value : -1, label : "Cancelled"}
   ];
 
   const [text, setText] = useState('');
@@ -20,20 +22,23 @@ const ManageOrders = () => {
   console.log(text,value,startDate,endDate);
   return (
     <OrderContext.Provider value={{ text, setText, value, setValue,startDate,setStartDate,endDate,setEndDate }}>
-      <div>
+      <div >
         <Cards />
-        <div className="flex justify-between">
-          <div className="flex gap-2 w-1/2">
+        <div className="block sm:flex justify-between">
+          <div className="block sm:flex gap-2 ">
             <SearchInput />
-
             <Dropdown statusOptions={statusOption} />
           </div>
-          <div className="flex gap-2">
+          <div className="block sm:flex gap-2">
             <DatePicker type="start"/>
             <DatePicker type="end"/>
           </div>
         </div>
+        
+        
         <OrderTable data={{text,value,startDate,endDate}}/>
+        
+        
       </div>
     </OrderContext.Provider>
   );

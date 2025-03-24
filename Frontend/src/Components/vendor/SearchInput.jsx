@@ -15,7 +15,7 @@ const SearchInput = () => {
     setText(value)
   }
   return (
-    <div className="relative w-2/4 flex">
+    <div className="relative w-full sm:w-3/4 flex pb-6">
       <Input
         type="text"
         onChange={handleInputChange}
