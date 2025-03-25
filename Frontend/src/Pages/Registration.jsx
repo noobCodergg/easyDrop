@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Slider from "react-slick"; // Import react-slick for the carousel
-import "slick-carousel/slick/slick.css"; // Import slick carousel styles
-import "slick-carousel/slick/slick-theme.css"; // Import slick theme styles
+import Slider from "react-slick"; 
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css"; 
 import { LogInInput } from "../Components/ui/input";
 import { Button } from "../Components/ui/button";
 import { createVendor } from "../Api/VendorApi/VendorApi";

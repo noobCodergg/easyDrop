@@ -17,6 +17,7 @@ import VendorProductOrderManagement from "./Pages/VendorProductOrderManagement";
 import ManageOrders from "./Pages/ManageOrders";
 import ManageProducts from "./Pages/ManageProducts";
 import AdminOrder from "./Pages/AdminOrder";
+import VendorProfile from "./Pages/VendorProfile";
 
 
 
@@ -45,6 +46,7 @@ function App() {
          <Route path="products" element={<ManageProducts/>}/>
         </Route>
        <Route path="/adminorders" element={<AdminOrder/>}/>
+       <Route path="/myaccount" element={<VendorProfile/>}/>
       </Routes>
    
   );
