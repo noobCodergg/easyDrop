@@ -55,4 +55,25 @@ const adminOrders=async(req,res)=>{
     }
   }
 
-  module.exports={adminOrders}
+
+  const getCancelledOrders = async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query; 
+  
+      let query = db('cancelledorders').select('*');
+  
+      if (startDate && endDate) {
+        query = query.whereBetween('order_date', [startDate, endDate]); 
+      }
+  
+      const cancelledOrders = await query; 
+      res.status(200).json(cancelledOrders); 
+  
+    } catch (error) {
+      res.status(500).json({ error: error.message }); 
+    }
+  };
+  
+  
+
+  module.exports={adminOrders,getCancelledOrders}

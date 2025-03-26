@@ -19,7 +19,7 @@ const ManageOrders = () => {
   const [value,setValue]=useState('');
   const [startDate,setStartDate]=useState('');
   const [endDate,setEndDate]=useState('')
-  console.log(text,value,startDate,endDate);
+  
   return (
     <OrderContext.Provider value={{ text, setText, value, setValue,startDate,setStartDate,endDate,setEndDate }}>
       <div >

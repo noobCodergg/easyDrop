@@ -18,6 +18,8 @@ import ManageOrders from "./Pages/ManageOrders";
 import ManageProducts from "./Pages/ManageProducts";
 import AdminOrder from "./Pages/AdminOrder";
 import VendorProfile from "./Pages/VendorProfile";
+import DamagedProduct from "./Pages/DamagedProduct";
+import CancelledProduct from "./Pages/CancelledProduct";
 
 
 
@@ -47,6 +49,8 @@ function App() {
         </Route>
        <Route path="/adminorders" element={<AdminOrder/>}/>
        <Route path="/myaccount" element={<VendorProfile/>}/>
+       <Route path="/damagedproduct" element={<DamagedProduct/>}/>
+       <Route path="/cancelledproduct" element={<CancelledProduct/>}/>
       </Routes>
    
   );
