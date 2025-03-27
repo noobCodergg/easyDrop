@@ -2,12 +2,13 @@ const db=require('../config/db')
 const {printError}=require('../helpers/controllerProfile')
 const {statusCode}=require('../helpers/httpStatusCode')
 const validateApiFields=require('../helpers/validateApiKeys')
+const moment =require('moment-timezone')
 
 const adminOrders=async(req,res)=>{
     try {
       const { startDate, endDate } = req.query; 
-  
-      console.log(startDate,endDate)
+      
+      
       
      if (!validateApiFields({ startDate,endDate })) {
       printError("Api Field(s) Errors", "createTransaction");
@@ -59,21 +60,75 @@ const adminOrders=async(req,res)=>{
   const getCancelledOrders = async (req, res) => {
     try {
       const { startDate, endDate } = req.query; 
+      const formatStartDate = moment(startDate).format("YYYY-MM-DD");
+      const formatEndDate=moment(endDate).format("YYYY-MM-DD")
   
-      let query = db('cancelledorders').select('*');
+      let query = db('cancelledorders as co')
+      .select('co.order_id',
+        'co.order_date',
+        'co.damaged',
+        'p.name',
+        'p.img_location',
+        'p.description',
+        'p.buying_price',
+        'p.resell_price',
+        'p.retail_price',
+        'p.suggested_price',
+        'p.stock',
+        'p.variants',
+        'p.featured',
+        'p.status',
+        'pc.category',
+        'p.external_product',
+        "co.remarks"
+      )
+      .join("products as p","co.product_id","p.id")
+      .join("product_categories as pc", "p.category_id","pc.id")
   
       if (startDate && endDate) {
-        query = query.whereBetween('order_date', [startDate, endDate]); 
+        query = query.whereBetween('order_date', [formatStartDate, formatEndDate]); 
       }
   
       const cancelledOrders = await query; 
       res.status(200).json(cancelledOrders); 
   
     } catch (error) {
-      res.status(500).json({ error: error.message }); 
+      res.status(500).json({ error: error.message });
+      console.log(error) 
     }
   };
+
+
+  const updateCancelledOrderDamageStatus = async (req, res) => {
+    try {
+      const { orderId } = req.params; 
+      const { damaged, remarks } = req.body; 
+
+      console.log(damaged,remarks,orderId)
+  
+      // Perform the update query
+      const updatedDamagedStatus = await db('cancelledorders')
+        .where({ order_id: orderId })
+        .update({ damaged: damaged, remarks: remarks });
+  
+      
+      if (updatedDamagedStatus === 0) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+  
+      // Respond with a success message
+      return res.status(200).json({ message: 'Order status updated successfully' });
+    } catch (error) {
+      
+      console.error(error);
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+
+  
+  
   
   
 
-  module.exports={adminOrders,getCancelledOrders}
+  module.exports={adminOrders,getCancelledOrders,updateCancelledOrderDamageStatus}

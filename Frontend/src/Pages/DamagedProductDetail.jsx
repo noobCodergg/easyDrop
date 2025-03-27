@@ -1,96 +1,71 @@
 import React from 'react';
 
-const DamagedProductDetail = () => {
-  // Product data structured from your input
-  const product = {
-    id: '67', // Assuming this is a product ID
-    categoryId: '2', // Assuming this is a category ID
-    name: 'Awei Y669 Bluetooth TWS Waterproof Outdoor Dual Speaker (31W)',
-    images: [
-      'image-1700642260901-240399882.jpg',
-      'image-1700642260901-305866201.jpg',
-      'image-1700642260902-232406435.jpg'
-    ],
-    isActive: '0', // Assuming 0 means inactive
-    specs: {
-      model: 'Y669',
-      batteryCapacity: '2200mAh',
-      chargingTime: '4 hours',
-      musicPlayTime: '12 Hours (IPX7 Level)',
-      bluetoothDistance: '8 ~ 12 M'
-    },
-    prices: [3050, 3150, 3250, 3250], // Price variants or history
-    stockLevels: [7, 5], // Assuming these are stock-related numbers
-    unknownFields: [null, null, '1', '0', '0', '2', '0', '1', '2'] // Remaining fields with unclear meaning
-  };
+const DamagedProductDetail = ({ data }) => {
+  console.log(data);
 
   return (
-    <div className="product-detail" style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      {/* Product Title */}
-      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>{product.name}</h1>
+    <div className="max-w-4xl mx-auto p-6 md:p-20">
+      <div className="bg-white  rounded-lg overflow-hidden">
+        {/* Image and Title Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+          <div className="flex justify-center items-center">
+            <img 
+              src={data.img_location} 
+              alt={data.name}
+              className="w-full max-w-md h-auto object-cover rounded-lg "
+            />
+          </div>
+          <div className="flex flex-col justify-center">
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">{data.name}</h1>
+            <p className="text-gray-600 text-lg">{data.description}</p>
+          </div>
+        </div>
 
-      {/* Product ID and Category */}
-      <div style={{ marginBottom: '20px' }}>
-        <p><strong>Product ID:</strong> {product.id}</p>
-        <p><strong>Category ID:</strong> {product.categoryId}</p>
-        <p><strong>Active Status:</strong> {product.isActive === '0' ? 'Inactive' : 'Active'}</p>
-      </div>
+        {/* Product Details Section */}
+        <div className="border-t border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">Product Details</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Category:</span> {data.category || 'N/A'}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Stock:</span> {data.stock || 'N/A'}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">External Product:</span> 
+                {data.external_product ? 'Yes' : 'No'}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Featured:</span> 
+                {data.featured ? 'Yes' : 'No'}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Variants:</span> {data.variants || 'N/A'}
+              </p>
+            </div>
 
-      {/* Image Gallery */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        {product.images.map((image, index) => (
-          <img
-            key={index}
-            src={`/${image}`} // Adjust path as needed
-            alt={`${product.name} - View ${index + 1}`}
-            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-          />
-        ))}
-      </div>
-
-      {/* Product Specifications */}
-      <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '20px', marginBottom: '15px' }}>Specifications</h2>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li style={{ marginBottom: '10px' }}><strong>Model:</strong> {product.specs.model}</li>
-          <li style={{ marginBottom: '10px' }}><strong>Battery Capacity:</strong> {product.specs.batteryCapacity}</li>
-          <li style={{ marginBottom: '10px' }}><strong>Charging Time:</strong> {product.specs.chargingTime}</li>
-          <li style={{ marginBottom: '10px' }}><strong>Music Play Time:</strong> {product.specs.musicPlayTime}</li>
-          <li style={{ marginBottom: '10px' }}><strong>Bluetooth Range:</strong> {product.specs.bluetoothDistance}</li>
-        </ul>
-      </div>
-
-      {/* Pricing */}
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '20px', marginBottom: '15px' }}>Pricing</h2>
-        <p style={{ fontSize: '18px', color: '#2ecc71' }}>
-          Price Range: ${Math.min(...product.prices).toLocaleString()} 
-          {product.prices.length > 1 && ` - $${Math.max(...product.prices).toLocaleString()}`}
-        </p>
-      </div>
-
-      {/* Stock Levels */}
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '20px', marginBottom: '15px' }}>Stock Information</h2>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {product.stockLevels.map((stock, index) => (
-            <li key={index} style={{ marginBottom: '10px' }}>
-              <strong>Stock Level {index + 1}:</strong> {stock}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Unknown Fields */}
-      <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px' }}>
-        <h2 style={{ fontSize: '20px', marginBottom: '15px' }}>Additional Data</h2>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {product.unknownFields.map((field, index) => (
-            <li key={index} style={{ marginBottom: '10px' }}>
-              <strong>Field {index + 1}:</strong> {field === null ? 'N/A' : field}
-            </li>
-          ))}
-        </ul>
+            {/* Pricing Section */}
+            <div className="space-y-3">
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Buying Price:</span> 
+                Tk. {parseFloat(data.buying_price || 0).toFixed(2)}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Resell Price:</span> 
+                Tk. {parseFloat(data.resell_price || 0).toFixed(2)}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Retail Price:</span> 
+                Tk. {parseFloat(data.retail_price || 0).toFixed(2)}
+              </p>
+              <p className="text-gray-600">
+                <span className="font-medium text-gray-800">Suggested Price:</span> 
+                Tk. {parseFloat(data.suggested_price || 0).toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

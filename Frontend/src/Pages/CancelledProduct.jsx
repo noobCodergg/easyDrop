@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import {
   Table,
   TableBody,
@@ -21,25 +22,32 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../Components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../Components/ui/dropdown-menu";
 import { Button } from "../Components/ui/button";
 import { Calendar } from "../Components/ui/calendar";
 import DamagedProductDetail from './DamagedProductDetail';
+import { getCancelledOrders } from '../Api/AdminApi/AdminApi';
 
 const CancelledProduct = () => {
   const [activeTab, setActiveTab] = useState("damaged");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
- 
+  const [damagedProducts, setDamagedProducts] = useState([]);
+  const [returnedProducts, setReturnedProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleStartDateChange = (selectedDate) => {
     setStartDate(selectedDate);
-    console.log("Selected start date:", selectedDate);
   };
 
   const handleEndDateChange = (selectedDate) => {
     setEndDate(selectedDate);
-    console.log("Selected end date:", selectedDate);
   };
 
   const openModal = (product) => {
@@ -52,54 +60,41 @@ const CancelledProduct = () => {
     setSelectedProduct(null);
   };
 
-  const fetchCancelledOrders=async()=>{
-    try{
-      const response=await getCancelledProducts(startDate,endDate)
-      console.log(response)
-    }catch(error){
-      console.log(error)
+  const fetchCancelledOrders = async () => {
+    try {
+      const response = await getCancelledOrders(startDate, endDate);
+      setDamagedProducts(response.data.filter(order => order.damaged === 1));
+      setReturnedProducts(response.data.filter(order => order.damaged === 0));
+    } catch (error) {
+      console.error("Error fetching cancelled orders:", error);
     }
-  }
+  };
 
-  useEffect(()=>{
-   fetchCancelledOrders();
-  },[])
-
-  // Sample data (replace with your actual data source)
-  const damagedProducts = [
-    { orderId: "ORD001", name: "Product A", image: "url-to-image-a", status: "Damaged" },
-    { orderId: "ORD002", name: "Product B", image: "url-to-image-b", status: "Damaged" },
-  ];
-
-  const returnedProducts = [
-    { orderId: "ORD003", name: "Product C", image: "url-to-image-c", status: "Returned" },
-    { orderId: "ORD004", name: "Product D", image: "url-to-image-d", status: "Returned" },
-  ];
+  useEffect(() => {
+    fetchCancelledOrders();
+  }, [startDate, endDate]);
 
   return (
-    <div className="max-w-[1300px] w-full mx-auto bg-white p-6">
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 mt-10">
+    <div className="max-w-[1300px] w-full mx-auto bg-white p-6 rounded-lg shadow-md">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         {[
-          { title: "Total Cancelled Product", count: 100 },
-          { title: "Total Damaged Product", count: 100 },
-          { title: "Total Stocked Product", count: 100 },
+          { title: "Total Cancelled Product", count: damagedProducts.length + returnedProducts.length },
+          { title: "Total Damaged Product", count: damagedProducts.length },
+          { title: "Total Stocked Product", count: returnedProducts.length },
         ].map((item, index) => (
           <Card
             key={index}
             className="shadow-md hover:shadow-lg transition-shadow duration-300 bg-white rounded-lg"
           >
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                {item.title}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">{item.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-gray-900">
-                  {item.count}
-                </span>
+                <span className="text-2xl font-bold text-gray-900">{item.count}</span>
                 <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                  {item.title}
+                  {item.title.split(" ")[1]}
                 </span>
               </div>
             </CardContent>
@@ -107,68 +102,79 @@ const CancelledProduct = () => {
         ))}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-1 items-start sm:items-center mt-10 mb-10">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-[200px] justify-start text-left font-normal border-gray-300",
-                !startDate && "text-gray-500"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-              {startDate ? format(startDate, "yyyy-MM-dd") : <span>Pick a start date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-white shadow-lg rounded-md">
-            <Calendar
-              mode="single"
-              selected={startDate}
-              onSelect={handleStartDateChange}
-              initialFocus
-              className="rounded-md border-none"
-            />
-          </PopoverContent>
-        </Popover>
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-10 mb-10">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal",
+                  !startDate && "text-gray-500"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                {startDate ? format(startDate, "yyyy-MM-dd") : <span>Start Date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-white shadow-lg rounded-md">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={handleStartDateChange}
+                initialFocus
+                className="rounded-md border-none"
+              />
+            </PopoverContent>
+          </Popover>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-[200px] justify-start text-left font-normal border-gray-300",
-                !endDate && "text-gray-500"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-              {endDate ? format(endDate, "yyyy-MM-dd") : <span>Pick an end date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-white shadow-lg rounded-md">
-            <Calendar
-              mode="single"
-              selected={endDate}
-              onSelect={handleEndDateChange}
-              initialFocus
-              className="rounded-md border-none"
-            />
-          </PopoverContent>
-        </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal",
+                  !endDate && "text-gray-500"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                {endDate ? format(endDate, "yyyy-MM-dd") : <span>End Date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-white shadow-lg rounded-md">
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={handleEndDateChange}
+                initialFocus
+                className="rounded-md border-none"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">
-          Search
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-[120px] justify-between">
+              All
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white shadow-lg rounded-md">
+            <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer">Acknowledge</DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-gray-100 cursor-pointer">Pending</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
+      {/* Tabs and Tables */}
       <div>
-        {/* Tab Navigation */}
-        <div className="flex border-b mb-4">
+        <div className="flex border-b mb-6">
           <button
             className={`px-4 py-2 font-medium ${
               activeTab === "damaged"
                 ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-500"
+                : "text-gray-500 hover:text-gray-700"
             }`}
             onClick={() => setActiveTab("damaged")}
           >
@@ -178,7 +184,7 @@ const CancelledProduct = () => {
             className={`px-4 py-2 font-medium ${
               activeTab === "returned"
                 ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-500"
+                : "text-gray-500 hover:text-gray-700"
             }`}
             onClick={() => setActiveTab("returned")}
           >
@@ -186,84 +192,113 @@ const CancelledProduct = () => {
           </button>
         </div>
 
-        {/* Tab Content */}
         {activeTab === "damaged" && (
-          <div className="w-full overflow-x-auto mt-10">
-            <Table className="min-w-full">
+          <div className="w-full overflow-x-auto">
+            <Table className="min-w-full border-collapse">
               <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="text-center">Order ID</TableHead>
-                  <TableHead className="text-center">Date</TableHead>
-                  <TableHead className="text-center">Product Name</TableHead>
-                  <TableHead className="text-center">Product Image</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
+                <TableRow className="bg-gray-100">
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Order ID</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Date</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Product Name</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Product Image</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Remarks</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Status</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {damagedProducts.map((product) => (
-                  <TableRow key={product.orderId}>
-                    <TableCell className="text-center">{product.orderId}</TableCell>
-                    <TableCell className="text-center">22-2-2022</TableCell>
-                    <TableCell className="text-center">{product.name}</TableCell>
-                    <TableCell className="text-center">
-                     hi
-                    </TableCell>
-                    <TableCell className="text-center">{product.status}</TableCell>
-                    <TableCell className="flex items-center justify-center">
-                      <Eye
-                        className="h-4 w-4 cursor-pointer text-blue-500"
-                        onClick={() => openModal(product)}
-                      />
+                {damagedProducts.length > 0 ? (
+                  damagedProducts.map((product) => (
+                    <TableRow key={product.order_id} className="hover:bg-gray-50">
+                      <TableCell className="text-center py-4">{product.order_id || "N/A"}</TableCell>
+                      <TableCell className="text-center py-4">
+                        {product.order_date ? moment(product.order_date).format("YYYY-MM-DD") : "N/A"}
+                      </TableCell>
+                      <TableCell className="text-center py-4">{product.name || "N/A"}</TableCell>
+                      <TableCell className="text-center py-4">
+                        {product.image ? (
+                          <img src={product.image} alt={product.name} className="w-16 h-16 object-cover mx-auto rounded" />
+                        ) : (
+                          "N/A"
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center py-4">{product.remarks || "N/A"}</TableCell>
+                      <TableCell className="text-center py-4">Damaged</TableCell>
+                      <TableCell className="text-center py-4">
+                        <Eye
+                          className="h-5 w-5 cursor-pointer text-blue-500 mx-auto"
+                          onClick={() => openModal(product)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-4 text-gray-500">
+                      No damaged products found
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
         )}
 
         {activeTab === "returned" && (
-          <div className="w-full overflow-x-auto mt-10">
-            <Table className="min-w-full">
+          <div className="w-full overflow-x-auto">
+            <Table className="min-w-full border-collapse">
               <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="text-center">Order ID</TableHead>
-                  <TableHead className="text-center">Date</TableHead>
-                  <TableHead className="text-center">Product Name</TableHead>
-                  <TableHead className="text-center">Product Image</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
+                <TableRow className="bg-gray-100">
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Order ID</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Date</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Product Name</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Product Image</TableHead>
+                  <TableHead className="text-center font-semibold text-gray-700 py-3">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {returnedProducts.map((product) => (
-                  <TableRow key={product.orderId}>
-                    <TableCell className="text-center">{product.orderId}</TableCell>
-                    <TableCell className="text-center">22-2-2022</TableCell>
-                    <TableCell className="text-center">{product.name}</TableCell>
-                    <TableCell className="text-center">
-                     hi
+                {returnedProducts.length > 0 ? (
+                  returnedProducts.map((product) => (
+                    <TableRow key={product.order_id} className="hover:bg-gray-50">
+                      <TableCell className="text-center py-4">{product.order_id || "N/A"}</TableCell>
+                      <TableCell className="text-center py-4">
+                        {product.order_date ? moment(product.order_date).format("YYYY-MM-DD") : "N/A"}
+                      </TableCell>
+                      <TableCell className="text-center py-4">{product.name || "N/A"}</TableCell>
+                      <TableCell className="text-center py-4">
+                        {product.image ? (
+                          <img src={product.image} alt={product.name} className="w-16 h-16 object-cover mx-auto rounded" />
+                        ) : (
+                          "N/A"
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center py-4">Returned</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-4 text-gray-500">
+                      No returned products found
                     </TableCell>
-                    <TableCell className="text-center">{product.status}</TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
         )}
       </div>
 
-      {/* Modal for DamagedProductDetail */}
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
               onClick={closeModal}
             >
               ✕
             </button>
-            <DamagedProductDetail />
+            <DamagedProductDetail data={selectedProduct} />
           </div>
         </div>
       )}
