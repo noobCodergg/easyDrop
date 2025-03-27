@@ -1,4 +1,5 @@
 const db=require('../config/db')
+const { catchBlockCodes } = require('../helpers/catchBlockCodes')
 const {printError}=require('../helpers/controllerProfile')
 const {statusCode}=require('../helpers/httpStatusCode')
 const validateApiFields=require('../helpers/validateApiKeys')
@@ -90,11 +91,13 @@ const adminOrders=async(req,res)=>{
       }
   
       const cancelledOrders = await query; 
-      res.status(200).json(cancelledOrders); 
+      res.status(statusCode.OK).json({
+        flag:"SUCCESS",
+        data:cancelledOrders
+      }); 
   
     } catch (error) {
-      res.status(500).json({ error: error.message });
-      console.log(error) 
+       catchBlockCodes(res,error)
     }
   };
 
@@ -104,9 +107,15 @@ const adminOrders=async(req,res)=>{
       const { orderId } = req.params; 
       const { damaged, remarks } = req.body; 
 
-      console.log(damaged,remarks,orderId)
+      if (!validateApiFields({ orderId,damaged,remarks })) {
+        printError("Api Field(s) Errors", "createTransaction");
+        return res.status(statusCode.BAD_REQUEST).json({
+          flag: "FAIL",
+          msg: "Api Field(s) Errors",
+        });
+      }
   
-      // Perform the update query
+     
       const updatedDamagedStatus = await db('cancelledorders')
         .where({ order_id: orderId })
         .update({ damaged: damaged, remarks: remarks });
@@ -117,11 +126,12 @@ const adminOrders=async(req,res)=>{
       }
   
       // Respond with a success message
-      return res.status(200).json({ message: 'Order status updated successfully' });
+      return res.status(statusCode.OK).json({
+        flag:"SUCCESS",
+        data:updatedDamagedStatus
+     } );
     } catch (error) {
-      
-      console.error(error);
-      return res.status(500).json({ error: error.message });
+       catchBlockCodes(res,error)
     }
   };
 

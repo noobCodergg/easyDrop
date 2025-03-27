@@ -67,7 +67,7 @@ const DamagedProduct =AzureADOptions => {
   const fetchCancelledOrders = async () => {
     try {
       const response = await getCancelledOrders(startDate, endDate);
-      let filteredOrders = response.data;
+      let filteredOrders = response.data.data;
       if (filterStatus !== "All") {
         filteredOrders = filteredOrders.filter(order => order.status === filterStatus);
       }

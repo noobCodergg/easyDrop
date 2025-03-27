@@ -63,8 +63,8 @@ const CancelledProduct = () => {
   const fetchCancelledOrders = async () => {
     try {
       const response = await getCancelledOrders(startDate, endDate);
-      setDamagedProducts(response.data.filter(order => order.damaged === 1));
-      setReturnedProducts(response.data.filter(order => order.damaged === 0));
+      setDamagedProducts(response.data.data.filter(order => order.damaged === 1));
+      setReturnedProducts(response.data.data.filter(order => order.damaged === 0));
     } catch (error) {
       console.error("Error fetching cancelled orders:", error);
     }
