@@ -7,7 +7,7 @@ import { PackageOpen, Shapes, Clock3, Mail, MapPin, Phone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../Components/ui/avatar';
 import { Input } from '../Components/ui/input';
 import { postWebinarRequest } from '../Api/WebinarApi/WebinarApi';
-
+import Swal from 'sweetalert2';
 
 // Placeholder for missing imports (uncomment and adjust paths as needed)
 // import { errorMsg, successMsg } from '../../helpers/notificationMsg';
@@ -31,37 +31,96 @@ function JoinWebinar() {
   };
 
   // Placeholder for handleSubmit (uncomment and implement API call if available)
-  const handleSubmit = async(e) => {
+ 
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = ['', null, undefined];
 
     if (errors.includes(inputData.email)) {
-      console.error('Email field required'); 
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Email field is required',
+      });
       return;
     }
 
     if (errors.includes(inputData.phone)) {
-      console.error('Mobile field required'); 
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Mobile field is required',
+      });
       return;
     }
 
     if (errors.includes(inputData.remarks)) {
-      console.error('Remarks field required'); 
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Remarks field is required',
+      });
       return;
     }
-     try{
-      const response=await postWebinarRequest(inputData)
-     }catch(error){
-      console.log(error)
-     }
+
+    // Phone number validation
+    const phoneRegex = /^[0-9]{11}$/;
     
-    console.log('Form submitted:', {
-      email: inputData.email,
-      number: inputData.phone ,
-      remarks : inputData.remarks
-    });
-    setInputData({ phone: '', email: '',remarks:'' });
-    console.log('Success: Form submitted'); 
+    if (!phoneRegex.test(inputData.phone)) {
+      if (inputData.phone.length < 11) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Phone number must be exactly 11 digits. Ex.01322873854',
+        });
+      } else if (inputData.phone.length > 11) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Phone number exceeds 11 digits. Ex.01322873854',
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Phone number must contain only digits. Ex.01322873854',
+        });
+      }
+      return;
+    }
+
+    try {
+      const response = await postWebinarRequest(inputData);
+      console.log(response.data.flag)
+      if (response.data.flag === "SUCCESS") {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Form submitted successfully',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        setInputData({ phone: '', email: '', remarks: '' });
+      } 
+
+      console.log('Form submitted:', {
+        email: inputData.email,
+        number: inputData.phone,
+        remarks: inputData.remarks
+      });
+
+    } catch (error) {
+      
+        Swal.fire({
+          icon: 'info',
+          title: 'Already in Queue',
+          text: 'You are already in the webinar queue. Your submission time has been updated.',
+          showConfirmButton: true
+        });
+      } 
+      
+    
   };
 
   // NewFooter Component

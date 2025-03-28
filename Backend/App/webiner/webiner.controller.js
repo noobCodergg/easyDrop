@@ -8,7 +8,6 @@ const { statusCode } = require("../helpers/httpStatusCode");
 const postWebinerRequest = async (req, res) => {
   try {
     const { inputdata } = req.body;
-
     const { email, phone, remarks } = inputdata;
 
     if (!validateApiFields({ email, phone })) {
@@ -21,11 +20,33 @@ const postWebinerRequest = async (req, res) => {
 
     const datetime = moment().format("YYYY-MM-DD HH:mm:ss");
 
+    // Check if phone number exists with status 0
+    const existingRecord = await db("webinarrequest")
+      .where({ phone, status: 0 })
+      .first();
+
+    if (existingRecord) {
+      // Update datetime if record exists
+      await db("webinarrequest")
+        .where({ phone, status: 0 })
+        .update({
+          datetime,
+        });
+
+      // Send response indicating existing record
+      return res.status(500).json({
+        flag: "FAIL",
+        msg: "Phone number already exists with pending status. Datetime updated.",
+      });
+    }
+
+    // If no record exists, insert new record
     const data = await db("webinarrequest").insert({
       email,
       phone,
       remarks,
       datetime,
+      status: 0, // Added status field with default value 0
     });
 
     return res.status(statusCode.OK).json({
@@ -67,7 +88,7 @@ const updateWebinarStatus = async (req, res) => {
 
     if (!validateApiFields({ id, value })) {
       printError("Api Field(s) Errors", "createTransaction");
-      return res.status(statusCode.BAD_REQUEST).json({
+      return res.status(200).json({
         flag: "FAIL",
         msg: "Api Field(s) Errors",
       });
@@ -80,7 +101,7 @@ const updateWebinarStatus = async (req, res) => {
       data: updatedValue,
     });
   } catch (error) {
-    catchBlockCodes(error);
+    catchBlockCodes(res, error); // Fixed: added res parameter
   }
 };
 
