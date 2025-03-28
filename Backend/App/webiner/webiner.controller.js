@@ -22,13 +22,13 @@ const postWebinerRequest = async (req, res) => {
 
     // Check if phone number exists with status 0
     const existingRecord = await db("webinarrequest")
-      .where({ phone, status: 0 })
+      .where({ phone })
       .first();
 
     if (existingRecord) {
       // Update datetime if record exists
       await db("webinarrequest")
-        .where({ phone, status: 0 })
+        .where({ phone })
         .update({
           datetime,
         });
