@@ -25,6 +25,7 @@ require('./app/finance/finance.routes')(app)
 require('./app/vendor/vendor.routes')(app)
 require('./app/orders/order.routes')(app)
 require('./app/admin/admin.routes')(app)
+require('./app/webiner/webiner.route')(app)
 
 
 const PORT = 5000;

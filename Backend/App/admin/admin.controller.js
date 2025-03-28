@@ -136,9 +136,6 @@ const adminOrders=async(req,res)=>{
   };
 
 
-  
-  
-  
-  
+
 
   module.exports={adminOrders,getCancelledOrders,updateCancelledOrderDamageStatus}

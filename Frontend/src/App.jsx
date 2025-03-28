@@ -20,6 +20,7 @@ import AdminOrder from "./Pages/AdminOrder";
 import VendorProfile from "./Pages/VendorProfile";
 import DamagedProduct from "./Pages/DamagedProduct";
 import CancelledProduct from "./Pages/CancelledProduct";
+import ShowWebinarList from "./Pages/ShowWebinarList";
 
 
 
@@ -51,6 +52,7 @@ function App() {
        <Route path="/myaccount" element={<VendorProfile/>}/>
        <Route path="/damagedproduct" element={<DamagedProduct/>}/>
        <Route path="/cancelledproduct" element={<CancelledProduct/>}/>
+       <Route path="/showwebinarlist" element={<ShowWebinarList/>}/>
       </Routes>
    
   );

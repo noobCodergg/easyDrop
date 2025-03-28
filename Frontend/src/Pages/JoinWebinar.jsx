@@ -6,6 +6,7 @@ import { faPeopleGroup, faStar, faTruckRampBox, faUsers } from '@fortawesome/fre
 import { PackageOpen, Shapes, Clock3, Mail, MapPin, Phone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../Components/ui/avatar';
 import { Input } from '../Components/ui/input';
+import { postWebinarRequest } from '../Api/WebinarApi/WebinarApi';
 
 
 // Placeholder for missing imports (uncomment and adjust paths as needed)
@@ -20,7 +21,7 @@ const Content = ({ lang, en, bn }) => {
 
 function JoinWebinar() {
   const navigate = useNavigate();
-  const [inputData, setInputData] = useState({ email: '', username: '' });
+  const [inputData, setInputData] = useState({ email: '', phone: '',remarks: '' });
 
   const handleInputData = (e) => {
     setInputData((prev) => ({
@@ -30,27 +31,37 @@ function JoinWebinar() {
   };
 
   // Placeholder for handleSubmit (uncomment and implement API call if available)
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     const errors = ['', null, undefined];
 
     if (errors.includes(inputData.email)) {
-      console.error('Email field required'); // Replace with errorMsg
+      console.error('Email field required'); 
       return;
     }
 
-    if (errors.includes(inputData.username)) {
-      console.error('Mobile field required'); // Replace with errorMsg
+    if (errors.includes(inputData.phone)) {
+      console.error('Mobile field required'); 
       return;
     }
 
-    // Simulate API call since createWebinarRequest is commented out
+    if (errors.includes(inputData.remarks)) {
+      console.error('Remarks field required'); 
+      return;
+    }
+     try{
+      const response=await postWebinarRequest(inputData)
+     }catch(error){
+      console.log(error)
+     }
+    
     console.log('Form submitted:', {
       email: inputData.email,
-      number: inputData.username.replace(/\D/g, ''),
+      number: inputData.phone ,
+      remarks : inputData.remarks
     });
-    setInputData({ username: '', email: '' });
-    console.log('Success: Form submitted'); // Replace with successMsg
+    setInputData({ phone: '', email: '',remarks:'' });
+    console.log('Success: Form submitted'); 
   };
 
   // NewFooter Component
@@ -472,11 +483,20 @@ function JoinWebinar() {
                   onChange={handleInputData}
                 />
                 <Input
-                  type="number"
-                  name="username"
+                  type="text"
+                  name="phone"
                   placeholder="Phone Number"
                   className="py-4 mb-4 text-black bg-white rounded-none md:py-6"
-                  value={inputData.username}
+                  value={inputData.phone}
+                  onChange={handleInputData}
+                />
+
+<Input
+                  type="text"
+                  name="remarks"
+                  placeholder="Remarks"
+                  className="py-4 mb-4 text-black bg-white rounded-none md:py-6"
+                  value={inputData.remarks}
                   onChange={handleInputData}
                 />
                 <Button className="text-black bg-white rounded-none shadow-xl hover:bg-white md:py-6 md:text-lg">
