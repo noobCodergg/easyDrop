@@ -1,4 +1,4 @@
-const { createCategory, getCategory } = require("./category.controller");
+const { createCategory, getCategory } = require("./categoryController");
 
 const router = require("express").Router();
 
