@@ -2,12 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment-timezone")
-const {controllerProfile}=require('./app/helpers/controllerProfile')
+const {controllerProfile}=require('./app/helpers/controllerProfile.js')
 const app = express();
 
 app.use(
   cors({
-    origin: ["https://easy-drop-sepia.vercel.app/"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
