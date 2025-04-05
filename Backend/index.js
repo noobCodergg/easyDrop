@@ -10,7 +10,7 @@ const app = express();
 // CORS configuration
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],  
+    origin: ["https://easy-drop-sepia.vercel.app/"],  
     methods: "GET,POST,PUT,DELETE", 
     credentials: true, 
   })
@@ -23,7 +23,7 @@ moment.tz.setDefault('Asia/Dhaka');
  
 
 
-require('./app/category/categoryroute.js')(app);
+require('./app/category/categoryroute')(app);
 require('./app/transactions/transaction.routes')(app);
 require('./app/finance/finance.routes')(app);
 require('./app/vendor/vendor.routes')(app);
