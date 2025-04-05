@@ -2,7 +2,7 @@ const db = require("../config/db");
 const { statusCode } = require("../helpers/httpStatusCode");
 const { catchBlockCodes } = require("../helpers/catchBlockCodes");
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
