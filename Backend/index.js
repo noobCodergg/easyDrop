@@ -6,23 +6,12 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ Dynamic CORS Configuration
-const allowedOrigins = [
-  "http://127.0.0.1:5173", // Local dev frontend
-  "https://easydrop-3.onrender.com" // Deployed frontend
-];
-
+// ✅ Allow all origins (open CORS)
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "*", // Allow all origins
     methods: "GET,POST,PUT,DELETE",
-    credentials: true,
+    credentials: true,  // If you need to allow credentials (cookies, etc.)
   })
 );
 
