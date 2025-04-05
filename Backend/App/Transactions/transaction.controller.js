@@ -2,8 +2,7 @@ const moment = require("moment-timezone");
 const db = require("../config/db");
 const { statusCode } = require("../helpers/httpStatusCode");
 const { catchBlockCodes } = require("../helpers/catchBlockCodes");
-const validateApiFields = require("../helpers/validateApiKeys");
-const { printError } = require("../helpers/controllerProfile");
+
 
 const createTransaction = async (req, res) => {
   try {
@@ -18,14 +17,7 @@ const createTransaction = async (req, res) => {
       type,
     } = req.body;
 
-    // Validate required fields
-    if (!validateApiFields({ category_name, remarks, created_by, status, type })) {
-      printError("Api Field(s) Errors", "createTransaction");
-      return res.status(statusCode.BAD_REQUEST).json({
-        flag: "FAIL",
-        msg: "Api Field(s) Errors",
-      });
-    }
+  
 
     // Use default timezone (Asia/Dhaka) set in index.js
     const formattedDate = moment(date).format("YYYY-MM-DD HH:mm:ss");
@@ -121,14 +113,7 @@ const updateTransaction = async (req, res) => {
     const { id } = req.params;
     const updatedFields = req.body;
 
-    // Validate required fields
-    if (!validateApiFields({ id })) {
-      printError("Invalid Transaction ID", "updateTransaction");
-      return res.status(statusCode.BAD_REQUEST).json({
-        flag: "FAIL",
-        msg: "Invalid Transaction ID",
-      });
-    }
+  
 
     await db.transaction(async (trx) => {
       const existingTransaction = await trx("transactions").where({ id }).first();

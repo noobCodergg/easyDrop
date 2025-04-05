@@ -1,13 +1,13 @@
 const knex = require("../config/db");
 const { statusCode } = require("../helpers/httpStatusCode");
 const { catchBlockCodes } = require("../helpers/catchBlockCodes"); // Fixed typo: catChBlockCodes → catchBlockCodes
-const { printError } = require("../helpers/controllerProfile");
+
 
 const getFinancialSummary = async (req, res) => {
   const { startDate, endDate } = req.params;
 
   try {
-    // Base query for detailed breakdown
+    
     const baseQuery = knex("orders as o")
       .join("products as p", "o.product_id", "=", "p.id")
       .join("order_info as i", "i.id", "=", "o.order_id")
@@ -23,13 +23,13 @@ const getFinancialSummary = async (req, res) => {
       .groupByRaw("order_date, order_week, order_month, week_start_date")
       .orderBy("order_date", "desc");
 
-    // Execute base query once
+    
     const result = await baseQuery;
 
-    // Check if date range is valid
+    
     const hasValidDateRange = startDate && endDate && startDate !== "null" && endDate !== "null";
 
-    // Calculate totals
+  
     let totalSales = 0;
     let totalCOGS = 0;
     let totalLogistics = 0;

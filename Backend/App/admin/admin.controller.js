@@ -1,8 +1,8 @@
 const db=require('../config/db')
 const { catchBlockCodes } = require('../helpers/catchBlockCodes')
-const {printError}=require('../helpers/controllerProfile')
+
 const {statusCode}=require('../helpers/httpStatusCode')
-const validateApiFields=require('../helpers/validateApiKeys')
+
 const moment =require('moment-timezone')
 
 const adminOrders=async(req,res)=>{
@@ -11,13 +11,7 @@ const adminOrders=async(req,res)=>{
       
       
       
-     if (!validateApiFields({ startDate,endDate })) {
-      printError("Api Field(s) Errors", "createTransaction");
-      return res.status(statusCode.BAD_REQUEST).json({
-        flag: "FAIL",
-        msg: "Api Field(s) Errors",
-      });
-    }
+    
   
       const orders = await db("orders")
         .select(
@@ -107,13 +101,7 @@ const adminOrders=async(req,res)=>{
       const { orderId } = req.params; 
       const { damaged, remarks } = req.body; 
 
-      if (!validateApiFields({ orderId,damaged,remarks })) {
-        printError("Api Field(s) Errors", "createTransaction");
-        return res.status(statusCode.BAD_REQUEST).json({
-          flag: "FAIL",
-          msg: "Api Field(s) Errors",
-        });
-      }
+    
   
      
       const updatedDamagedStatus = await db('cancelledorders')

@@ -1,8 +1,7 @@
 const db = require("../config/db");
 const { statusCode } = require("../helpers/httpStatusCode");
 const { catchBlockCodes } = require("../helpers/catchBlockCodes");
-const validateApiFields = require("../helpers/validateApiKeys");
-const { printError } = require("../helpers/controllerProfile");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -11,13 +10,7 @@ const createVendor = async (req, res) => {
   try {
     const { formData } = req.body;
 
-    if (!validateApiFields({ formData })) {
-      printError("Api Field(s) Errors", "createTransaction");
-      return res.status(statusCode.BAD_REQUEST).json({
-        flag: "FAIL",
-        msg: "Api Field(s) Errors",
-      });
-    }
+  
 
     if (!formData.password || formData.password.length < 8) {
       return res
@@ -56,13 +49,7 @@ const vendorLogin = async (req, res) => {
   try {
     const { formData } = req.body;
 
-    if (!validateApiFields(formData)) {
-      console.error("API Field(s) Errors in vendorLogin");
-      return res.status(400).json({
-        flag: "FAIL",
-        msg: "API Field(s) Errors",
-      });
-    }
+   
 
     const existingUser = await db("vendors")
       .where({ phone: formData.phoneNumber })

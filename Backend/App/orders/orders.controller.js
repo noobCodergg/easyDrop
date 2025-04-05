@@ -1,6 +1,5 @@
 const db = require('../config/db'); // Ensure the correct path to db.js
-const validateApiFields =require('../helpers/validateApiKeys')
-const { printError} =require('../helpers/controllerProfile')
+
 const {statusCode}=require('../helpers/httpStatusCode')
 const {catchBlockCodes}=require('../helpers/catchBlockCodes');
 const moment = require('moment-timezone');
@@ -15,15 +14,7 @@ const getOrders = async (req, res) => {
 
     console.log(formatStartDate,formatEndDate)
 
-    
-
-    if (!validateApiFields({ userId })) {
-      printError("Api Field(s) Errors", "getOrders");
-      return res.status(statusCode.BAD_REQUEST).json({
-        flag: "FAIL",
-        msg: "Api Field(s) Errors",
-      });
-    }
+ 
 
     let query = db("orders as o")
       .select(
@@ -102,13 +93,7 @@ const orderDetails=async (req,res)=>{
   try{
     const {orderId}=req.params;
     
-    if (!validateApiFields({ orderId })) {
-      printError("Api Field(s) Errors", "createTransaction");
-      return res.status(statusCode.BAD_REQUEST).json({
-        flag: "FAIL",
-        msg: "Api Field(s) Errors",
-      });
-    }
+   
 
     const orderDetails=await db("orders as o")
     .select(

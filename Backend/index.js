@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const moment = require("moment-timezone");
 require('dotenv').config();  
 
-const { controllerProfile } = require('./app/helpers/controllerProfile');
+
 const app = express();
 
 // CORS configuration
@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(morgan("dev"));  
 moment.tz.setDefault('Asia/Dhaka');  
 
-controllerProfile();  
+ 
 
 
 require('./app/catagory/category.routes')(app);
