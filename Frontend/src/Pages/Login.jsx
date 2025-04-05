@@ -3,13 +3,14 @@ import { Eye, EyeOff } from "lucide-react"; // Make sure you import these icons
 import { Button } from "../Components/ui/button";
 import { LogInInput } from "../Components/ui/input";
 import { venderLogn } from "../Api/VendorApi/VendorApi";
+import { useNavigate } from "react-router-dom";
 
 const LogIn = () => {
   const [formData, setFormData] = useState({
     phoneNumber: "",
     password: "",
   });
-
+  const navigate=useNavigate();
   const [showPassword, setShowPassword] = useState(false); // Initialized as false
 
   const handleChange = (e) => {
@@ -21,6 +22,7 @@ const LogIn = () => {
     console.log("Form Data Submitted:", formData);
     try{
       const response=await venderLogn(formData)
+      navigate("/dashboard")
     }catch(error){
       console.log("Error Occured")
     }
