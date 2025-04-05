@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:5000/api/vendor", 
+    baseURL: "https://easy-drop-68iz.vercel.app/api/vendor", 
     withCredentials: true,
   });
 
