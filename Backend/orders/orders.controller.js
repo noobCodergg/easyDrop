@@ -58,13 +58,7 @@ const updateOrderStatus = async (req, res) => {
     const { orderId } = req.params; // Get orderId from URL params
     const { status } = req.body; // Get new status from request body
 
-    if (!validateApiFields({ orderId,status })) {
-      printError("Api Field(s) Errors", "createTransaction");
-      return res.status(statusCode.BAD_REQUEST).json({
-        flag: "FAIL",
-        msg: "Api Field(s) Errors",
-      });
-    }
+   
     
 
     // Ensure status is provided
