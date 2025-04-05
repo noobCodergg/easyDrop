@@ -8,12 +8,7 @@ const app = express();
 
 // Update CORS configuration: specify exact origin instead of *
 app.use(
-  cors({
-    origin: "https://easydrop-3.onrender.com", // Replace with your front-end domain
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // Enable credentials (cookies, etc.)
-    sameSite: "None",   // Required for cross-origin cookies
-  })
+  cors()
 );
 
 app.use(express.json());
