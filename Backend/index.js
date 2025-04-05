@@ -9,7 +9,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: [ "http://127.0.0.1:5173"],
+    origin: [ "http://127.0.0.1:5173","https://easydrop-3.onrender.com"],
     methods: "GET,POST,PUT,DELETE", 
     credentials: true, 
   })
