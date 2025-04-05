@@ -9,10 +9,10 @@ const app = express();
 // Update CORS configuration
 app.use(
   cors({
-    origin: "https://easydrop-3.onrender.com", // Specify allowed origin (replace with your front-end domain)
-    methods: ["GET", "POST", "PUT", "DELETE"],  // Correct array format
-    credentials: true,  // If you need to allow credentials (cookies, etc.)
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: "*", 
+    methods: ["GET", "POST", "PUT", "DELETE"],  
+    credentials: true, 
+    allowedHeaders: "*"
   })
 );
 
