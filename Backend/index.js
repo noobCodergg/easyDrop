@@ -23,7 +23,7 @@ moment.tz.setDefault('Asia/Dhaka');
  
 
 
-require('./app/category/categoryRoute')(app);
+require('./app/category/categoryroute.js')(app);
 require('./app/transactions/transaction.routes')(app);
 require('./app/finance/finance.routes')(app);
 require('./app/vendor/vendor.routes')(app);
