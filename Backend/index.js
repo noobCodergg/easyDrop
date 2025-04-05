@@ -10,7 +10,7 @@ const app = express();
 app.use(
   cors({
     origin: "*", // Allow all origins
-    methods: "GET,POST,PUT,DELETE",
+    methods: ["GET,POST,PUT,DELETE"],
     credentials: true,  // If you need to allow credentials (cookies, etc.)
   })
 );
