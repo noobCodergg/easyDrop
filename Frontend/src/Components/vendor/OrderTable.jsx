@@ -12,50 +12,7 @@ import {
 import { Button } from "../ui/button";
 import { Eye } from "lucide-react";
 import OrderDetails from "./OrderDetails";
-
-// Dummy data for orders
-const dummyOrders = [
-  {
-    id: 1,
-    order_id: "ORD123",
-    date: "2025-04-01",
-    product_name: "Product 1",
-    productImage: "https://via.placeholder.com/150",
-    status: 0,
-  },
-  {
-    id: 2,
-    order_id: "ORD124",
-    date: "2025-04-02",
-    product_name: "Product 2",
-    productImage: "https://via.placeholder.com/150",
-    status: 1,
-  },
-  {
-    id: 3,
-    order_id: "ORD125",
-    date: "2025-04-03",
-    product_name: "Product 3",
-    productImage: "https://via.placeholder.com/150",
-    status: 2,
-  },
-  {
-    id: 4,
-    order_id: "ORD126",
-    date: "2025-04-04",
-    product_name: "Product 4",
-    productImage: "https://via.placeholder.com/150",
-    status: 3,
-  },
-  {
-    id: 5,
-    order_id: "ORD127",
-    date: "2025-04-05",
-    product_name: "Product 5",
-    productImage: "https://via.placeholder.com/150",
-    status: -1,
-  },
-];
+import { getOrders } from "../../api/orders"; // Make sure this path is correct
 
 export const modalContext = createContext();
 
@@ -66,19 +23,15 @@ const OrderTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [orderId, setOrderID] = useState();
 
-  // Commenting out the API call and using dummy data
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        // const response = await getOrders(5, text, value, startDate, endDate);
-        // const ordersWithUniqueIds = response.data.map((order, index) => ({
-        //   ...order,
-        //   id: order.id ?? `fallback-${index}`,
-        // }));
-        // setAllOrders(ordersWithUniqueIds);
-
-        // Using dummy data instead of API response
-        setAllOrders(dummyOrders);
+        const response = await getOrders(5, text, value, startDate, endDate);
+        const ordersWithUniqueIds = response.data.map((order, index) => ({
+          ...order,
+          id: order.id ?? `fallback-${index}`,
+        }));
+        setAllOrders(ordersWithUniqueIds);
       } catch (error) {
         console.log("Error Occurred:", error);
       }
