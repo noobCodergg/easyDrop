@@ -1,0 +1,10 @@
+services:
+  - type: static_site
+    name: my-react-app
+    env: static
+    buildCommand: yarn build
+    publishDirectory: build
+    routes:
+      - source: "/(.*)"
+        destination: "/index.html"
+        status: 200

@@ -53,7 +53,7 @@ const dummyOrders = [
     date: "2025-04-05",
     product_name: "Product 5",
     productImage: "https://via.placeholder.com/150",
-    status: 4,
+    status: -1,
   },
 ];
 
@@ -154,7 +154,7 @@ const OrderTable = () => {
                     <p className="bg-purple-200 text-purple-800 border rounded-full px-2 py-1">
                       Delivered
                     </p>
-                  ) : order.id === -1 ? (
+                  ) : order.status === -1 ? (
                     <p className="bg-red-200 text-red-800 border rounded-full px-2 py-1">
                       Cancelled
                     </p>
