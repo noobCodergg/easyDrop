@@ -9,7 +9,7 @@ const app = express();
 // Update CORS configuration: specify exact origin instead of *
 app.use(
   cors({
-    origin: "https://poetic-taffy-55cb94.netlify.app/", // Replace with your front-end domain
+    origin: "https://poetic-taffy-55cb94.netlify.app", // Replace with your front-end domain
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, 
     sameSite: "None",   
