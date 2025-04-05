@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const moment = require("moment-timezone")
-const {controllerProfile}=require('./app/helpers/controllerProfile.js')
+const {controllerProfile}=require('./app/helpers/controllerProfile')
 const app = express();
 
 app.use(
