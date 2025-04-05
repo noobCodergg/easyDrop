@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css"; 
 import { LogInInput } from "../Components/ui/input";
 import { Button } from "../Components/ui/button";
+// import the API function to create vendor
 import { createVendor } from "../Api/VendorApi/VendorApi";
 
 const SignUp = () => {
@@ -12,11 +13,12 @@ const SignUp = () => {
     email: "",
     phoneNumber: "",
     password: "",
-    nid:"",
+    nid: "",
     isAccepted: false,
   });
 
-  const [error,setError]=useState();
+  const [error, setError] = useState();
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -25,13 +27,17 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Data Submitted:", formData);
-    try{
-      const response=await createVendor(formData)
-    }catch(error){
-      setError(error.response.data.error)
+
+    try {
+      // Sending the data to the API to create a vendor
+      const response = await createVendor(formData);
+      // You can handle the response or navigate here
+    } catch (error) {
+      // If there's an error, store it in the state to display it
+      setError(error.response.data.error);
     }
   };
 
@@ -45,19 +51,19 @@ const SignUp = () => {
       name: "Mejba Wahid",
       rating: 4,
       text: "আমি কিনা বাড়ি থেকে ব্যবসা করতে চাই তাই আমি অনেক সময় নষ্ট করে ফেলেছি কিন্তু এখানে আমি সফল হয়েছি।",
-      image: "/images/reviewer/mejba_wahid.jpg", // Replace with actual image
+      image: "/images/reviewer/mejba_wahid.jpg",
     },
     {
       name: "Abu Bokkor",
       rating: 5,
       text: "এটি আমার ব্যবসার জন্য একটি দুর্দান্ত প্ল্যাটফর্ম। আমি খুব খুশি!",
-      image: "/images/reviewer/abu_bokkor.jpg", // Replace with actual image
+      image: "/images/reviewer/abu_bokkor.jpg",
     },
     {
       name: "Maruf",
       rating: 3,
       text: "ভালো সার্ভিস, তবে আরও উন্নতি করা যেতে পারে।",
-      image: "/images/reviewer/maruf.jpg", // Replace with actual image
+      image: "/images/reviewer/maruf.jpg",
     },
   ];
 
@@ -83,56 +89,49 @@ const SignUp = () => {
         }}
       >
         <div className="flex flex-col items-center justify-center space-y-4 p-4 text-white h-full">
-        <h2 className="text-4xl font-bold text-center">
-  Why Vendors Love EasyDrop
-</h2>
-<ul className="space-y-2 text-left w-full max-w-md">
-  <li className="flex items-center justify-start text-base">
-    <span className="text-2xl mr-1">✔</span> Simple investment  
-  </li>
-  <li className="flex items-center justify-start text-base">
-    <span className="text-2xl mr-1">✔</span> Seamless order & inventory management  
-  </li>
-  <li className="flex items-center justify-start text-base">
-    <span className="text-2xl mr-1">✔</span> Sell products under your own branding  
-  </li>
-  <li className="flex items-center justify-start text-base">
-    <span className="text-2xl mr-1">✔</span> 2000+ successful vendor shipments  
-  </li>
-  <li className="flex items-center justify-start text-base">
-    <span className="text-2xl mr-1">✔</span> Access to high-demand products & expert support  
-  </li>
-</ul>
+          <h2 className="text-4xl font-bold text-center">
+            Why Vendors Love EasyDrop
+          </h2>
+          <ul className="space-y-2 text-left w-full max-w-md">
+            <li className="flex items-center justify-start text-base">
+              <span className="text-2xl mr-1">✔</span> Simple investment
+            </li>
+            <li className="flex items-center justify-start text-base">
+              <span className="text-2xl mr-1">✔</span> Seamless order & inventory management
+            </li>
+            <li className="flex items-center justify-start text-base">
+              <span className="text-2xl mr-1">✔</span> Sell products under your own branding
+            </li>
+            <li className="flex items-center justify-start text-base">
+              <span className="text-2xl mr-1">✔</span> 2000+ successful vendor shipments
+            </li>
+            <li className="flex items-center justify-start text-base">
+              <span className="text-2xl mr-1">✔</span> Access to high-demand products & expert support
+            </li>
+          </ul>
 
           {/* Slider visible only on desktop (already hidden due to parent) */}
           <div className="w-full max-w-md">
             <div className="bg-white bg-opacity-20 p-3 rounded-lg">
               <Slider {...sliderSettings}>
                 {reviews.map((review, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-3 px-2 py-1"
-                  >
+                  <div key={index} className="flex items-center space-x-3 px-2 py-1">
                     <img
                       src={review.image}
                       alt={review.name}
                       className="w-10 h-10 rounded-full flex-shrink-0"
                       onError={(e) =>
                         (e.target.src = "https://via.placeholder.com/32")
-                      } // Fallback image
+                      }
                     />
                     <div className="flex-1">
-                      <p className="font-semibold text-white text-base">
-                        {review.name}
-                      </p>
+                      <p className="font-semibold text-white text-base">{review.name}</p>
                       <div className="flex text-yellow-400 text-sm">
                         {[...Array(5)].map((_, i) => (
                           <span key={i}>{i < review.rating ? "★" : "☆"}</span>
                         ))}
                       </div>
-                      <p className="text-sm text-white break-words">
-                        {review.text}
-                      </p>
+                      <p className="text-sm text-white break-words">{review.text}</p>
                     </div>
                   </div>
                 ))}
@@ -153,18 +152,15 @@ const SignUp = () => {
               className="w-8 h-8 md:w-12 md:h-12"
             />
             <h1 className="text-xl md:text-2xl font-bold text-purple-800">
-              <img src="/images/logo/new-sitelogo.png " className="h-8" />
+              <img src="/images/logo/new-sitelogo.png" className="h-8" />
             </h1>
           </div>
           <div className="rounded-sm p-3 md:p-4">
             <h3 className="text-base md:text-lg font-bold text-center text-gray-800 mb-3 md:mb-4">
               Create Your Account
             </h3>
-            
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-3 md:space-y-4 p-2 md:p-2"
-            >
+
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 p-2 md:p-2">
               <LogInInput
                 type="text"
                 name="name"
@@ -193,7 +189,7 @@ const SignUp = () => {
                 required
               />
 
-<LogInInput
+              <LogInInput
                 type="text"
                 name="nid"
                 placeholder="Type your NID"
@@ -202,7 +198,7 @@ const SignUp = () => {
                 label="NID"
                 required
               />
-              
+
               <LogInInput
                 type="password"
                 name="password"
@@ -212,7 +208,6 @@ const SignUp = () => {
                 label="Password"
                 required
               />
-
 
               <div className="flex items-center gap-2">
                 <input
@@ -252,22 +247,17 @@ const SignUp = () => {
           >
             <Slider {...sliderSettings}>
               {reviews.map((review, index) => (
-                <div
-                  key={index}
-                  className="flex items-center space-x-2 px-2 py-2"
-                >
+                <div key={index} className="flex items-center space-x-2 px-2 py-2">
                   <img
                     src={review.image}
                     alt={review.name}
                     className="w-8 h-8 rounded-full flex-shrink-0"
                     onError={(e) =>
                       (e.target.src = "https://via.placeholder.com/32")
-                    } // Fallback image
+                    }
                   />
                   <div className="flex-1">
-                    <p className="font-semibold text-white text-sm">
-                      {review.name}
-                    </p>
+                    <p className="font-semibold text-white text-sm">{review.name}</p>
                     <div className="flex text-yellow-400 text-xs">
                       {[...Array(5)].map((_, i) => (
                         <span key={i}>{i < review.rating ? "★" : "☆"}</span>

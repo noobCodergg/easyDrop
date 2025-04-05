@@ -246,11 +246,11 @@ const Dashboard = () => {
         </div>
         {isNavOpen && (
           <div className="md:hidden mt-4 flex flex-col gap-4 bg-white p-4 rounded-b-lg shadow-md">
-            <Link to="#" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
+            <Link to="/dashboard" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
               <Home size={20} className="mr-2" /> Dashboard
             </Link>
-            <Link to="#" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
-              <User size={20} className="mr-2" /> Profile
+            <Link to="/manage" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
+              <User size={20} className="mr-2" /> Manage
             </Link>
             <Link to="#" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
               <Store size={20} className="mr-2" /> Marketplace
@@ -286,7 +286,7 @@ const Dashboard = () => {
           <ul className="space-y-2 flex-grow">
             <li className="bg-purple-400 rounded ">
               <Link
-                to="#"
+                to="/dashboard"
                 onClick={() => setSelectedMenu("Dashboard")}
                 className={`flex items-center py-2 px-4 text-white rounded transition-colors ${
                   selectedMenu === "Dashboard" ? "bg-purple-800" : "hover:bg-purple-400"
@@ -298,8 +298,8 @@ const Dashboard = () => {
             </li>
             <li className="bg-purple-400 rounded ">
               <Link
-                to="#"
-                onClick={() => setSelectedMenu("Profile")}
+                to="/manage"
+                onClick={() => setSelectedMenu("Manage")}
                 className={`flex items-center py-2 px-4 text-white rounded transition-colors ${
                   selectedMenu === "Profile" ? "bg-purple-800" : "hover:bg-purple-400"
                 } ${isSidenavCollapsed ? "justify-center" : ""}`}
@@ -310,8 +310,8 @@ const Dashboard = () => {
             </li>
             <li className="bg-purple-400 rounded ">
               <Link
-                to="#"
-                onClick={() => setSelectedMenu("Marketplace")}
+                to="/myaccount"
+                onClick={() => setSelectedMenu("Account")}
                 className={`flex items-center py-2 px-4 text-white rounded transition-colors ${
                   selectedMenu === "Marketplace" ? "bg-purple-800" : "hover:bg-purple-400"
                 } ${isSidenavCollapsed ? "justify-center" : ""}`}

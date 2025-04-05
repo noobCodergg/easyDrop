@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { modalContext } from "./OrderTable";
-import { getOrderDetails } from "../../Api/OrdersApi/OrdersApi";
 import moment from "moment";
+
 function OrderDetails({ orderId }) {
   const { setIsModalOpen } = useContext(modalContext);
   const [data, setData] = useState(null);
@@ -10,6 +10,8 @@ function OrderDetails({ orderId }) {
     setIsModalOpen(false);
   };
 
+  // Commented out the API call
+  /*
   const fetchOrderDetails = async () => {
     try {
       const response = await getOrderDetails(orderId);
@@ -29,6 +31,34 @@ function OrderDetails({ orderId }) {
       fetchOrderDetails();
     }
   }, [orderId]);
+  */
+
+  // Dummy data
+  useEffect(() => {
+    setData({
+      order_id: "ORD123456",
+      product_name: "Wireless Headphones",
+      quantity: 2,
+      total: 5000,
+      additional_cost: 200,
+      category: "Electronics",
+      resell_price: 5500,
+      variant_type: "Color",
+      variant: "Black",
+      status: 2,
+      tracking_id: "TRK987654",
+      printed: true,
+      cancelled: 0,
+      cancel_details: null,
+      cancellation_charged: 0,
+      advance: 1000,
+      delivery_charge: 100,
+      discount: 200,
+      paid: 4900,
+      updated_by: "John Doe",
+      updated_at: 1617863720,
+    });
+  }, []);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500/20 px-4">

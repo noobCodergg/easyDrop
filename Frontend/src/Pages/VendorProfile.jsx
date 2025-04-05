@@ -1,5 +1,27 @@
-import { getVendorDetail, updatePersonalDetail, updateShopDetail } from '../Api/VendorApi/VendorApi';
 import React, { useEffect, useState } from 'react';
+
+// Dummy data for testing
+const dummyPersonalDetail = {
+  name: 'John Doe',
+  email: 'john.doe@example.com',
+  phone: '123-456-7890',
+  house_no: '123',
+  road: 'Main St',
+  area: 'Downtown',
+  city: 'Cityville',
+};
+
+const dummyShopDetail = {
+  shopName: 'John\'s Shop',
+  shopPhone: '987-654-3210',
+  shopEmail: 'shop@example.com',
+  shopNo: '456',
+  shopRoad: 'Market St',
+  shopArea: 'Central',
+  shopCity: 'Shopville',
+};
+
+const dummyImageUrl = 'https://via.placeholder.com/150';
 
 const VendorProfile = () => {
   const [personalEditMode, setPersonalEditMode] = useState(false);
@@ -7,55 +29,22 @@ const VendorProfile = () => {
   const [imageEditMode, setImageEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [serverImage, setServerImage] = useState(null); // Server-stored image URL
-  const [previewImage, setPreviewImage] = useState(null); // Currently displayed image
+  const [serverImage, setServerImage] = useState(dummyImageUrl); // Server-stored image URL
+  const [previewImage, setPreviewImage] = useState(dummyImageUrl); // Currently displayed image
   const [selectedImage, setSelectedImage] = useState(null); // File object for upload
 
-  const [personalDetail, setPersonalDetail] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    house_no: '',
-    road: '',
-    area: '',
-    city: '',
-  });
+  const [personalDetail, setPersonalDetail] = useState(dummyPersonalDetail);
+  const [shopDetail, setShopDetail] = useState(dummyShopDetail);
 
-  const [shopDetail, setShopDetail] = useState({
-    shopName: '',
-    shopPhone: '',
-    shopEmail: '',
-    shopNo: '',
-    shopRoad: '',
-    shopArea: '',
-    shopCity: '',
-  });
-
-  // Fetch vendor details from API
+  // Simulate fetching vendor details from API
   const fetchVendorDetails = async () => {
     setLoading(true);
     try {
-      const response = await getVendorDetail(8); // Replace 1 with dynamic vendorId
-      setPersonalDetail({
-        name: response.data.name || '',
-        email: response.data.email || '',
-        phone: response.data.phone || '',
-        house_no: response.data.house_no || '',
-        road: response.data.road || '',
-        area: response.data.area || '',
-        city: response.data.city || '',
-      });
-      setShopDetail({
-        shopName: response.data.shop_name || '',
-        shopPhone: response.data.shop_phone || '',
-        shopEmail: response.data.shop_email || '',
-        shopNo: response.data.shop_no || '',
-        shopRoad: response.data.shop_road || '',
-        shopArea: response.data.shop_area || '',
-        shopCity: response.data.shop_city || '',
-      });
-      setServerImage(response.data.imageUrl || null);
-      setPreviewImage(response.data.imageUrl || null);
+      // Simulating API call, using dummy data instead
+      setPersonalDetail(dummyPersonalDetail);
+      setShopDetail(dummyShopDetail);
+      setServerImage(dummyImageUrl);
+      setPreviewImage(dummyImageUrl);
     } catch (error) {
       console.error('Error fetching vendor details:', error);
       setError('Failed to load profile details.');
@@ -98,11 +87,9 @@ const VendorProfile = () => {
     setLoading(true);
     setError(null);
     try {
-      const formData = new FormData();
-      formData.append('image', selectedImage);
-      const response = await updateVendorImage(8, formData); // Replace with real API
-      setServerImage(response.data.imageUrl);
-      setPreviewImage(response.data.imageUrl);
+      // Simulating API call, using dummy data instead
+      setServerImage('https://via.placeholder.com/150'); // Set new image URL
+      setPreviewImage('https://via.placeholder.com/150'); // Set preview image
       setSelectedImage(null);
       setImageEditMode(false);
     } catch (error) {
@@ -138,8 +125,8 @@ const VendorProfile = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await updatePersonalDetail(8, personalDetail);
-      console.log('Personal update successful:', response);
+      // Simulating API call, using dummy data instead
+      console.log('Personal update successful');
       setPersonalEditMode(false);
     } catch (error) {
       console.error('Error updating personal details:', error);
@@ -157,8 +144,8 @@ const VendorProfile = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await updateShopDetail(8, shopDetail);
-      console.log('Shop update successful:', response);
+      // Simulating API call, using dummy data instead
+      console.log('Shop update successful');
       setShopEditMode(false);
     } catch (error) {
       console.error('Error updating shop details:', error);
@@ -303,40 +290,95 @@ const VendorProfile = () => {
               <div>
                 <span className="font-medium">Phone:</span> {personalDetail.phone || 'N/A'}
               </div>
-              <div className="mt-4">
-                <span className="font-medium">Address:</span>{' '}
-                {personalDetail.house_no && personalDetail.road && personalDetail.area && personalDetail.city
-                  ? `${personalDetail.house_no}, ${personalDetail.road}, ${personalDetail.area}, ${personalDetail.city}`
-                  : 'N/A'}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <span className="font-medium">House No:</span> {personalDetail.house_no || 'N/A'}
+                </div>
+                <div>
+                  <span className="font-medium">Road:</span> {personalDetail.road || 'N/A'}
+                </div>
+                <div>
+                  <span className="font-medium">Area:</span> {personalDetail.area || 'N/A'}
+                </div>
+                <div>
+                  <span className="font-medium">City:</span> {personalDetail.city || 'N/A'}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: 'name', label: 'Name', type: 'text' },
-                { name: 'email', label: 'Email', type: 'email' },
-                { name: 'phone', label: 'Phone', type: 'text' },
-                { name: 'house_no', label: 'House No', type: 'text' },
-                { name: 'road', label: 'Road', type: 'text' },
-                { name: 'area', label: 'Area', type: 'text' },
-                { name: 'city', label: 'City', type: 'text' },
-              ].map((field) => (
-                <div key={field.name} className="flex flex-col">
-                  <label htmlFor={field.name} className="text-sm font-medium text-gray-700 mb-1">
-                    {field.label}
-                  </label>
+            <div className="space-y-4">
+              <div>
+                <label className="font-medium text-gray-800">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={personalDetail.name}
+                  onChange={handlePersonalDetailChange}
+                  className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="font-medium text-gray-800">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={personalDetail.email}
+                  onChange={handlePersonalDetailChange}
+                  className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="font-medium text-gray-800">Phone</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={personalDetail.phone}
+                  onChange={handlePersonalDetailChange}
+                  className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="font-medium text-gray-800">House No</label>
                   <input
-                    id={field.name}
-                    type={field.type}
-                    name={field.name}
-                    value={personalDetail[field.name]}
+                    type="text"
+                    name="house_no"
+                    value={personalDetail.house_no}
                     onChange={handlePersonalDetailChange}
-                    placeholder={field.label}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                    required
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                 </div>
-              ))}
+                <div>
+                  <label className="font-medium text-gray-800">Road</label>
+                  <input
+                    type="text"
+                    name="road"
+                    value={personalDetail.road}
+                    onChange={handlePersonalDetailChange}
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-medium text-gray-800">Area</label>
+                  <input
+                    type="text"
+                    name="area"
+                    value={personalDetail.area}
+                    onChange={handlePersonalDetailChange}
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-medium text-gray-800">City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={personalDetail.city}
+                    onChange={handlePersonalDetailChange}
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+              </div>
             </div>
           )}
         </section>
@@ -366,60 +408,106 @@ const VendorProfile = () => {
                 <span className="font-medium">Shop Name:</span> {shopDetail.shopName || 'N/A'}
               </div>
               <div>
-                <span className="font-medium">Phone:</span> {shopDetail.shopPhone || 'N/A'}
+                <span className="font-medium">Shop Phone:</span> {shopDetail.shopPhone || 'N/A'}
               </div>
               <div>
-                <span className="font-medium">Email:</span> {shopDetail.shopEmail || 'N/A'}
+                <span className="font-medium">Shop Email:</span> {shopDetail.shopEmail || 'N/A'}
               </div>
-              <div className="mt-4">
-                <span className="font-medium">Address:</span>{' '}
-                {shopDetail.shopNo && shopDetail.shopRoad && shopDetail.shopArea && shopDetail.shopCity
-                  ? `${shopDetail.shopNo}, ${shopDetail.shopRoad}, ${shopDetail.shopArea}, ${shopDetail.shopCity}`
-                  : 'N/A'}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <span className="font-medium">Shop No:</span> {shopDetail.shopNo || 'N/A'}
+                </div>
+                <div>
+                  <span className="font-medium">Shop Road:</span> {shopDetail.shopRoad || 'N/A'}
+                </div>
+                <div>
+                  <span className="font-medium">Shop Area:</span> {shopDetail.shopArea || 'N/A'}
+                </div>
+                <div>
+                  <span className="font-medium">Shop City:</span> {shopDetail.shopCity || 'N/A'}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: 'shopName', label: 'Shop Name', type: 'text' },
-                { name: 'shopPhone', label: 'Phone', type: 'text' },
-                { name: 'shopEmail', label: 'Email', type: 'email' },
-                { name: 'shopNo', label: 'Shop No', type: 'text' },
-                { name: 'shopRoad', label: 'Road', type: 'text' },
-                { name: 'shopArea', label: 'Area', type: 'text' },
-                { name: 'shopCity', label: 'City', type: 'text' },
-              ].map((field) => (
-                <div key={field.name} className="flex flex-col">
-                  <label htmlFor={field.name} className="text-sm font-medium text-gray-700 mb-1">
-                    {field.label}
-                  </label>
+            <div className="space-y-4">
+              <div>
+                <label className="font-medium text-gray-800">Shop Name</label>
+                <input
+                  type="text"
+                  name="shopName"
+                  value={shopDetail.shopName}
+                  onChange={handleShopDetailChange}
+                  className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="font-medium text-gray-800">Shop Phone</label>
+                <input
+                  type="text"
+                  name="shopPhone"
+                  value={shopDetail.shopPhone}
+                  onChange={handleShopDetailChange}
+                  className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="font-medium text-gray-800">Shop Email</label>
+                <input
+                  type="email"
+                  name="shopEmail"
+                  value={shopDetail.shopEmail}
+                  onChange={handleShopDetailChange}
+                  className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="font-medium text-gray-800">Shop No</label>
                   <input
-                    id={field.name}
-                    type={field.type}
-                    name={field.name}
-                    value={shopDetail[field.name]}
+                    type="text"
+                    name="shopNo"
+                    value={shopDetail.shopNo}
                     onChange={handleShopDetailChange}
-                    placeholder={field.label}
-                    className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                    required
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                 </div>
-              ))}
+                <div>
+                  <label className="font-medium text-gray-800">Shop Road</label>
+                  <input
+                    type="text"
+                    name="shopRoad"
+                    value={shopDetail.shopRoad}
+                    onChange={handleShopDetailChange}
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-medium text-gray-800">Shop Area</label>
+                  <input
+                    type="text"
+                    name="shopArea"
+                    value={shopDetail.shopArea}
+                    onChange={handleShopDetailChange}
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-medium text-gray-800">Shop City</label>
+                  <input
+                    type="text"
+                    name="shopCity"
+                    value={shopDetail.shopCity}
+                    onChange={handleShopDetailChange}
+                    className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
+              </div>
             </div>
           )}
         </section>
       </div>
     </div>
   );
-};
-
-// Mock API function (replace with actual implementation)
-const updateVendorImage = async (vendorId, formData) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ data: { imageUrl: 'https://via.placeholder.com/150' } });
-    }, 1000);
-  });
 };
 
 export default VendorProfile;
