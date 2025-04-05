@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 
 // Assuming getOrdersByStatus is a function that fetches data from the API
-import { getOrdersByStatus } from "../api/orders"; 
+import { getOrdersByStatus } from "../../Api/OrdersApi/OrdersApi"; 
 
 const Cards = () => {
   const [data, setData] = useState({
