@@ -7,7 +7,6 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS configuration
 app.use(
   cors({
     origin: ["https://easy-drop-sepia.vercel.app/"],  
@@ -23,7 +22,7 @@ moment.tz.setDefault('Asia/Dhaka');
  
 
 
-require('./app/category/categoryroute')(app);
+
 require('./app/transactions/transaction.routes')(app);
 require('./app/finance/finance.routes')(app);
 require('./app/vendor/vendor.routes')(app);
