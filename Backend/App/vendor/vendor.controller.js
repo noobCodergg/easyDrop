@@ -65,7 +65,7 @@ const vendorLogin = async (req, res) => {
     }
 
     const existingUser = await db("vendors")
-      .where({ phone_number: formData.phoneNumber })
+      .where({ phone: formData.phoneNumber })
       .first();
 
     if (!existingUser) {
@@ -93,7 +93,7 @@ const vendorLogin = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(statusCode.ok).json({
+    res.status(statusCode.OK).json({
       flag: "SUCCESS",
       message: "Login successful",
       token,
