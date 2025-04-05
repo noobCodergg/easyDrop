@@ -2,17 +2,9 @@ import React, { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 
 const Cards = () => {
-  const [data, setData] = useState({
-    total_orders: 150,
-    approved_count: 100,
-    pending_count: 30,
-    shipped_count: 10,
-    delivered_count: 5,
-    cancelled_count: 5
-  });
+  const [data, setData] = useState();
 
-  // Commented out the API call
-  /*
+ 
   const fetchOrders = async () => {
     try {
       const response = await getOrdersByStatus(3);
@@ -26,7 +18,7 @@ const Cards = () => {
   useEffect(() => {
     fetchOrders();
   }, []);
-  */
+  
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pb-6">
