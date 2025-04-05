@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 
-const Cards = () => {
-  const [data, setData] = useState();
+// Assuming getOrdersByStatus is a function that fetches data from the API
+import { getOrdersByStatus } from "../api/orders"; 
 
- 
+const Cards = () => {
+  const [data, setData] = useState({
+    total_orders: 0,
+    approved_count: 0,
+    pending_count: 0,
+    shipped_count: 0,
+    delivered_count: 0,
+    cancelled_count: 0
+  });
+
   const fetchOrders = async () => {
     try {
-      const response = await getOrdersByStatus(3);
-      setData(response.data.result);
-      console.log(response);
+      const response = await getOrdersByStatus(3); // Modify this based on your API
+      setData(response.data.result); // Assuming this structure for the response
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching data: ", error);
     }
   }
 
   useEffect(() => {
     fetchOrders();
   }, []);
-  
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pb-6">

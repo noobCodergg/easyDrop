@@ -6,12 +6,13 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ Allow all origins (open CORS)
+
 app.use(
   cors({
     origin: "*", // Allow all origins
     methods: ["GET,POST,PUT,DELETE"],
     credentials: true,  // If you need to allow credentials (cookies, etc.)
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
 
@@ -19,11 +20,11 @@ app.use(express.json());
 app.use(morgan("dev"));
 moment.tz.setDefault("Asia/Dhaka");
 
-// ✅ Health check endpoint
+
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
-    time: moment().format(), // current time in Asia/Dhaka
+    time: moment().format(), 
     message: "Server is healthy",
   });
 });
