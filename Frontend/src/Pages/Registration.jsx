@@ -6,6 +6,7 @@ import { LogInInput } from "../Components/ui/input";
 import { Button } from "../Components/ui/button";
 // import the API function to create vendor
 import { createVendor } from "../Api/VendorApi/VendorApi";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -78,7 +79,11 @@ const SignUp = () => {
     autoplaySpeed: 3000, // Slide every 3 seconds
     arrows: false,
   };
-
+  
+  const navigate=useNavigate();
+  const handleNavigate=()=>{
+     navigate('/')
+  }
   return (
     <div className="flex flex-col lg:flex-row h-screen overflow-hidden">
       {/* Left Side Gradient (Hidden on mobile, 3/5 on desktop) with Text and Slider on Desktop */}
@@ -219,7 +224,7 @@ const SignUp = () => {
                 <p className="text-gray-700">Accept terms and conditions</p>
               </div>
               {error && <p className="text-red-700">{error}</p>}
-              <Button
+              <Button onClick={handleNavigate}
                 type="submit"
                 variant="logInButton"
                 className="w-full"
@@ -231,7 +236,7 @@ const SignUp = () => {
             <div className="flex items-center justify-center mt-3 md:mt-4">
               <p className="text-xs md:text-sm">
                 Already have an account?{" "}
-                <span className="font-semibold text-purple-800">Sign in</span>
+                <span className="font-semibold text-purple-800"><Link to='/login'>Log In here!</Link></span>
               </p>
             </div>
           </div>

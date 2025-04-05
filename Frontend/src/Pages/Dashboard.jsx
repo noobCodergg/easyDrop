@@ -252,8 +252,8 @@ const Dashboard = () => {
             <Link to="/manage" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
               <User size={20} className="mr-2" /> Manage
             </Link>
-            <Link to="#" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
-              <Store size={20} className="mr-2" /> Marketplace
+            <Link to="/myaccount" className="flex items-center py-2 px-4 text-mouve hover:bg-gray-200 rounded">
+              <Store size={20} className="mr-2" /> Profile
             </Link>
             <button
               onClick={startTour}

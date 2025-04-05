@@ -3,7 +3,7 @@ import { Eye, EyeOff } from "lucide-react"; // Make sure you import these icons
 import { Button } from "../Components/ui/button";
 import { LogInInput } from "../Components/ui/input";
 // import { venderLogn } from "../Api/VendorApi/VendorApi"; // API import commented out
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LogIn = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ const LogIn = () => {
       
       // Simulate navigation for now after form submission
       localStorage.setItem("isLoggedIn", true);
-      navigate("/dashboard");
+      navigate("/manage");
     } catch (error) {
       console.log("Error Occurred");
     }
@@ -124,7 +124,7 @@ const LogIn = () => {
               </Button>
             </form>
             <div className="flex items-center justify-center mt-4">
-              <p className="text-sm md:text-base">Don’t have an account? <span className="font-semibold text-purple-800">Sign up</span></p>
+              <p className="text-sm md:text-base">Don’t have an account? <span className="font-semibold text-purple-800"><Link to='/registration'>Register Here!</Link></span></p>
             </div>
           </div>
         </div>

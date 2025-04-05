@@ -9,7 +9,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://easy-drop-sepia.vercel.app/"],  
+    origin: [ "http://127.0.0.1:5173"],
     methods: "GET,POST,PUT,DELETE", 
     credentials: true, 
   })
@@ -22,13 +22,13 @@ moment.tz.setDefault('Asia/Dhaka');
  
 
 
-
-require('./app/transactions/transaction.routes')(app);
-require('./app/finance/finance.routes')(app);
-require('./app/vendor/vendor.routes')(app);
-require('./app/orders/order.routes')(app);
-require('./app/admin/admin.routes')(app);
-require('./app/webiner/webiner.route')(app);
+require('./category/categoryroute')(app);
+require('./transactions/transaction.routes')(app);
+require('./finance/finance.routes')(app);
+require('./vendor/vendor.routes')(app);
+require('./orders/order.routes')(app);
+require('./admin/admin.routes')(app);
+require('./webiner/webiner.route')(app);
 
 
 const PORT = process.env.PORT || 5000;  
