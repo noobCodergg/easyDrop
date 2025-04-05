@@ -123,7 +123,7 @@ const getVendorDetail = async (req, res) => {
       return res.status(404).json({ error: "Vendor not found" });
     }
 
-    res.json(vendorDetails[0]); // Send the vendor details
+    res.json(vendorDetails[0]); 
   } catch (error) {
     console.error("Error fetching vendor details:", error);
     res.status(500).json({ error: "Internal Server Error" });
