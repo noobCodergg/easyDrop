@@ -9,10 +9,9 @@ const app = express();
 // Update CORS configuration: specify exact origin instead of *
 app.use(
   cors({
-    origin: "https://poetic-taffy-55cb94.netlify.app", // Replace with your front-end domain
+    origin: "http://localhost:5173", 
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, 
-    sameSite: "None",   
+    credentials: true,   
   })
 );
 
@@ -36,6 +35,8 @@ require("./vendor/vendor.routes")(app);
 require("./orders/order.routes")(app);
 require("./admin/admin.routes")(app);
 require("./webiner/webiner.route")(app);
+require("./info/info.route")(app);
+require("./prize/prize.route")(app);
 
 const PORT = process.env.PORT || 5000;
 

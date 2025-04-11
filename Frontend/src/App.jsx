@@ -21,6 +21,9 @@ import VendorProfile from "./Pages/VendorProfile";
 import DamagedProduct from "./Pages/DamagedProduct";
 import CancelledProduct from "./Pages/CancelledProduct";
 import ShowWebinarList from "./Pages/ShowWebinarList";
+import Spinner from "./Pages/Spinner";
+import InfoList from "./Pages/InfoList";
+import ManagePrize from "./Pages/ManagePrize";
 
 
 
@@ -53,7 +56,10 @@ function App() {
        <Route path="/damagedproduct" element={<DamagedProduct/>}/>
        <Route path="/cancelledproduct" element={<CancelledProduct/>}/>
        <Route path="/showwebinarlist" element={<ShowWebinarList/>}/>
-      </Routes>
+       <Route path="/spinner" element={<Spinner/>}/>"
+       <Route path="/showinfo" element={<InfoList/>}/>
+       <Route path="/manageprize" element={<ManagePrize/>}/>
+      </Routes> 
    
   );
 }
